@@ -4,6 +4,8 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
+#include <ArduinoJson.h>
+#include <Adafruit_NeoPixel.h>
 
 //#include "image.h"
 
@@ -22,11 +24,24 @@ Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
 const char *ssid = "Hemma2020";
 const char *password = "Almvagen66@";
 
-String serverName = "http://192.168.198.16:5000";
-
-int currentImage = 31;
+String serverName = "http://192.168.198.190:5000";
 
 uint16_t onlineImage[2400] = {0}; 
+
+int latestMessageId = 0;
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(4, 12, NEO_GRB + NEO_KHZ800);
+
+void rainbow(int wait) {
+  for(long firstPixelHue = 0; firstPixelHue < 5*65536; firstPixelHue += 256) {
+    for(int i=0; i<strip.numPixels(); i++) { 
+      int pixelHue = firstPixelHue + (i * 65536L / strip.numPixels());
+      strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
+    }
+    strip.show();
+    delay(wait);
+  }
+}
 
 template<typename T, size_t N>
 void byteToWord(uint8_t byteArray[], T (&wordArray)[N], int len){
@@ -39,58 +54,10 @@ void byteToWord(uint8_t byteArray[], T (&wordArray)[N], int len){
 
 }
 
-void setup()
-{
-  Serial.begin(9600);
-  Serial.println("ILI9341 Test!");
-
-  tft.begin();
-
-  WiFi.begin(ssid, password);
-  Serial.println("Connecting");
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("");
-  Serial.print("Connected to WiFi network with IP Address: ");
-  Serial.println(WiFi.localIP());
-
-  Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
-
-  uint8_t testIn[4] = {0xff, 0xaa, 0xbb, 0xcc};
-  uint16_t testOut[2] = {0};
-  //testOut = 
-  //Serial.println(testOut[0]);
-  byteToWord(testIn, testOut, 4);
-  Serial.println(testOut[0]);
-
-  Serial.println("timeForLoop");
-  tft.fillScreen(ILI9341_BLACK);
-}
-
-void loop(void)
-{
-  Serial.println("fill screen");
-  //tft.fillScreen(ILI9341_BLACK);
-  tft.setCursor(0, 0);
-  tft.setRotation(1);
-  //tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
-  //tft.println("Hello World!");
-  Serial.println("draw");
-  tft.drawRGBBitmap((currentImage%8)*40, ((currentImage-(currentImage%8))/8)*60, onlineImage, 40, 60);
-  delay(300);
-  //Check WiFi connection status
-  //Check WiFi connection status
+void downloadImage(int currentImage){
   if (WiFi.status() == WL_CONNECTED)
   {
     HTTPClient http;
-
-    currentImage++;
-    if(currentImage > 31){
-      currentImage = 0;
-    }
 
     String serverPath = serverName + "/download/" + String(currentImage);
 
@@ -123,3 +90,113 @@ void loop(void)
     Serial.println("WiFi Disconnected");
   }
 }
+
+void updateImage(){
+  tft.fillScreen(ILI9341_BLACK);
+  tft.setCursor(0, 0);
+  tft.setRotation(1);
+  for(int currentImage = 0; currentImage <= 31; currentImage++){
+    downloadImage(currentImage);
+    Serial.println("draw");
+    tft.drawRGBBitmap((currentImage%8)*40, ((currentImage-(currentImage%8))/8)*60, onlineImage, 40, 60);
+    delay(50);
+  }
+}
+
+void setText(String text){
+  tft.fillScreen(ILI9341_BLACK);
+  tft.setCursor(0, 0);
+  tft.setRotation(1);
+  tft.println(text);
+}
+
+void checkForUpdate(){
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    HTTPClient http;
+
+    String serverPath = serverName + "/update";
+
+    // Your Domain name with URL path or IP address with path
+    http.begin(serverPath.c_str());
+
+    // Send HTTP GET request
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0)
+    {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      String payload = http.getString();
+      DynamicJsonDocument doc(1024);
+
+      deserializeJson(doc, payload);
+
+      if(latestMessageId != doc["id"]){
+        Serial.println("Update!");
+        latestMessageId = doc["id"];
+        if(doc["latest"] == 0){
+          updateImage();
+        }else {
+          setText(doc["text"]);
+        }
+        rainbow(40);
+      }
+    }
+    else
+    {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+    // Free resources
+    http.end();
+  }
+  else
+  {
+    Serial.println("WiFi Disconnected");
+  }
+}
+
+void setup()
+{
+  Serial.begin(9600);
+  Serial.println("ILI9341 Test!");
+
+  tft.begin();
+
+  WiFi.begin(ssid, password);
+  Serial.println("Connecting");
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.println("Timer set to 5 seconds (timerDelay variable), it will take 5 seconds before publishing the first reading.");
+
+  strip.begin();
+  strip.show();
+  strip.setBrightness(10);
+
+  Serial.println("timeForLoop");
+}
+
+void loop(void)
+{
+  checkForUpdate();
+  delay(10000);
+  //updateImage();
+  //tft.fillScreen(ILI9341_BLACK);
+  
+  
+  //tft.setTextColor(ILI9341_WHITE);  tft.setTextSize(3);
+  //tft.println("Hello World!");
+
+  
+}
+
+
+
