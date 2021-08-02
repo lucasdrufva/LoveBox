@@ -21,6 +21,8 @@ function requestListener(req, res) {
         case "download":
             handleDownload(req, res)
             break;
+        case "text":
+            handleText(req, res)
         default:
             res.end("200");
             break;
@@ -29,6 +31,10 @@ function requestListener(req, res) {
 }
 
 http.createServer(requestListener).listen(5000);
+
+function handleText(req, res){
+    state.text = req.url.split("/")[2]
+}
 
 function handleUpdate(req, res) {
     res.writeHead(200, {
