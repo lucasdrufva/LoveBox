@@ -67,8 +67,7 @@ class ImageController {
     //TODO: Change path to "/image/latest/{partIndex}"
     @GetMapping("/download/{partIndex}")
     ByteArrayResource downloadLatestImage(@PathVariable int partIndex) {
-        //Use latest id
-        Image image = imageRepository.findById(1L)
+        Image image = imageRepository.findFirstByOrderByDateDesc()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         byte[] part = image.getParts().get(partIndex).getContent();
 

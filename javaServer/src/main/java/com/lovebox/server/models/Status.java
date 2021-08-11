@@ -21,6 +21,10 @@ public class Status {
     @GeneratedValue
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name="device_id", nullable=false)
+    private Device device;
+
     private int type;
     private int notifier;
 

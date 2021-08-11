@@ -22,8 +22,6 @@ public class StatusResponse {
         if(status.getType() == Status.TYPE_IMAGE){
             response.setContentId(status.getImage().getId());
         }else if(status.getType() == Status.TYPE_TEXT){
-            System.out.println("ContentId id!");
-            System.out.println(status.getText());
             response.setContentId(status.getText().getId());
         }
 

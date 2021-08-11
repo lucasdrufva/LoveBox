@@ -7,10 +7,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class StatusRequest {
-    private String device;
-    private int type;
+public class StatusTextRequest {
     private int notifier;
-
-    private Long contentId;
+    private String text;
 }
