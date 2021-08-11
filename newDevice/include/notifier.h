@@ -5,9 +5,10 @@
 class Notifier{
 public:
     void begin();
+    void startNotifier(int notificationType);
     void rainbow();
     void clear();
-    void startNotifier(int notificationType);
+    void fadeWhite();
 private:
     Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, 12, NEO_GRB + NEO_KHZ800);
 };
