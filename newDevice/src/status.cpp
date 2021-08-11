@@ -9,7 +9,7 @@ int latestId = 0;
 void statusTask(void* parameters){
     for(;;){
         StatusUpdate status = network.getStatus();
-        if(status.statusId != latestId){
+        if(status.statusId != latestId && status.statusId != 0){
             latestId = status.statusId;
             xQueueSend( messageQueue, &status, portMAX_DELAY );
         }

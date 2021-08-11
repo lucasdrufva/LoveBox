@@ -9,8 +9,7 @@ void Network::begin()
     delay(1000);
     Serial.println("ESP32 is connected to Wi-Fi network");
 
-    authPassword = storage.getPassword();
-    Serial.println("Stored Password: " + authPassword);
+    auth = "Basic " + base64::encode(storage.getChipId() + ":" + storage.getPassword());
 
     if (!checkRegistred())
     {
@@ -35,11 +34,8 @@ void Network::registerDevice()
         Serial.println(httpCode);
         Serial.println(payload);
 
-        authPassword = payload;
-
-        storage.storePassword(authPassword);
-
-        http.end();
+        storage.storePassword(payload);
+        auth = "Basic " + base64::encode(storage.getChipId() + ":" + payload);
     }
     else
     {
@@ -57,15 +53,12 @@ bool Network::checkRegistred()
         HTTPClient http;
 
         http.begin("http://192.168.198.190:5000/client");
-
-        String auth = base64::encode(storage.getChipId() + ":" + authPassword);
-        http.addHeader("Authorization", "Basic " + auth);
+        http.addHeader("Authorization", auth);
 
         int httpCode = http.GET();
 
         if (httpCode == 200)
         { //Check for the returning code
-
             String payload = http.getString();
             Serial.println(httpCode);
             Serial.println(payload);
@@ -88,25 +81,18 @@ StatusUpdate Network::getStatus()
     HTTPClient http;
 
     http.begin("http://192.168.198.190:5000/device/status");
-
-    String auth = base64::encode("14110864:" + authPassword);
-    http.addHeader("Authorization", "Basic " + auth);
-
-    Serial.println("Time to get something");
+    http.addHeader("Authorization", auth);
 
     int httpCode = http.GET();
 
-    if (httpCode > 0)
+    if (httpCode == 200)
     { //Check for the returning code
-
         String payload = http.getString();
-        Serial.println(payload);
 
         DynamicJsonDocument doc(1024);
 
         deserializeJson(doc, payload);
 
-        Serial.println("New message!");
         message.statusId = doc["id"];
         message.type = doc["type"];
         message.contentId = doc["contentId"];
@@ -114,9 +100,79 @@ StatusUpdate Network::getStatus()
     }
     else
     {
+        message.statusId = 0;
         Serial.println("Error on HTTP request");
     }
 
     http.end();
     return message;
+}
+
+String Network::getText(int contentId){
+    String text = "";
+    HTTPClient http;
+
+    http.begin("http://192.168.198.190:5000/text/" + String(contentId));
+    http.addHeader("Authorization", auth);
+
+    int httpCode = http.GET();
+
+    if (httpCode == 200)
+    { //Check for the returning code
+        String payload = http.getString();
+
+        DynamicJsonDocument doc(1024);
+
+        deserializeJson(doc, payload);
+
+        text = doc["text"].as<String>();
+        
+    }
+    else
+    {
+        Serial.println("Error on HTTP request");
+    }
+
+    http.end();
+    return text;
+}
+
+//template <typename T, size_t N>
+void byteToWord(uint8_t byteArray[], uint16_t* wordArray, int len)
+{
+  Serial.println("convert bytes to words");
+  int j = 0;
+  for (int i = 1; i < len; i += 2)
+  {
+    wordArray[j] = byteArray[i + 1] + (byteArray[i] << 8);
+    j++;
+  }
+}
+
+//template <typename T, size_t N>
+void Network::getImagePart(int contentId, int part, uint16_t* onlineImage){
+    HTTPClient http;
+
+    // Your Domain name with URL path or IP address with path
+    http.begin("http://192.168.198.190:5000/image/" + String(contentId) + "/part/" + String(part));
+
+    // Send HTTP GET request
+    int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0)
+    {
+      Serial.println(part);
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      WiFiClient &stream = http.getStream();
+      uint8_t testIn[4800] = {0};
+      stream.readBytes(testIn, 4800);
+      byteToWord(testIn, onlineImage, 4800);
+    }
+    else
+    {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+    http.end();
 }

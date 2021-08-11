@@ -7,6 +7,7 @@
 
 Storage storage;
 Network network;
+Display display;
 
 void setup() {
   delay(5000);
@@ -18,6 +19,7 @@ void setup() {
   delay(100);
 
   network.begin();
+  display.begin();
 
   delay(1000);
 
@@ -25,11 +27,11 @@ void setup() {
 
   statusBegin();
   Serial.println("Status started");
-  displayBegin();
+  startDisplayTask();
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
+
 }
