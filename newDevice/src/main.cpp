@@ -4,10 +4,13 @@
 #include "status.h"
 #include "storage.h"
 #include "display.h"
+#include "notifier.h"
 
 Storage storage;
 Network network;
+Notifier notifier;
 Display display;
+
 
 void setup() {
   delay(5000);
@@ -20,6 +23,7 @@ void setup() {
 
   network.begin();
   display.begin();
+  notifier.begin();
 
   delay(1000);
 

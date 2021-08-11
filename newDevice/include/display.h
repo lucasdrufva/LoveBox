@@ -6,6 +6,7 @@
 #include <Adafruit_ILI9341.h>
 
 #include "status.h"
+#include "notifier.h"
 
 #define TFT_DC 22
 #define TFT_CS 21

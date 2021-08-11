@@ -2,6 +2,8 @@
 
 extern Network network;
 extern Display display;
+extern Notifier notifier;
+extern QueueHandle_t lidOpenQueue;
 
 void displayTask(void *parameter)
 {
@@ -21,6 +23,11 @@ void displayTask(void *parameter)
             }else if(recievedMessage.type == 0){
                 display.updateImage(recievedMessage.contentId);
             }
+            //TODO: Use real notifier type!
+            notifier.startNotifier(recievedMessage.notifier);
+            delay(5000);
+            int data = 0;
+            xQueueSend( lidOpenQueue, &data, portMAX_DELAY );
         }
         taskYIELD();
     }
