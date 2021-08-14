@@ -6,7 +6,7 @@ import axios from 'axios';
 
 import {useAuth} from '../AuthProvider';
 
-export default function AddDeviceButton() {
+export default function AddDeviceButton({updateDevices}) {
   const [addDeviceVisible, setAddDeviceVisible] = useState(false);
   const [retryVisible, setRetryVisible] = useState(false);
   const [inputText, onChangeInputText] = useState('');
@@ -35,6 +35,8 @@ export default function AddDeviceButton() {
       })
       .then(response => {
         console.log(response);
+        //Triggers rerender of device list
+        updateDevices();
       })
       .catch(error => {
         console.log(error);
