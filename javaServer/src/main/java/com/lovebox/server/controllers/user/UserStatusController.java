@@ -40,6 +40,7 @@ public class UserStatusController {
         status.setNotifier(statusText.getNotifier());
         status.setType(Status.TYPE_TEXT);
         status.setText(textRepository.save(dbText));
+        status.setSeen(false);
 
         Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(deviceName);
         if(!maybeDevice.isPresent()){
@@ -76,9 +77,11 @@ public class UserStatusController {
         imageRepository.save(dbImage);
         Status status = new Status();
         status.setDate(new Date());
+        //TODO: use real notifier
         status.setNotifier(0);
         status.setType(Status.TYPE_IMAGE);
         status.setImage(dbImage);
+        status.setSeen(false);
 
         Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(deviceName);
         if(!maybeDevice.isPresent()){

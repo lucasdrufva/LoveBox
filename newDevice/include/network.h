@@ -19,6 +19,7 @@ public:
     String getText(int contentId);
     //template <typename T, size_t N>
     void getImagePart(int contentId, int part, uint16_t* onlineImage);
+    void reportSeen(int statusId);
 private:
     String auth;
     void registerDevice();

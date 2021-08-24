@@ -176,3 +176,18 @@ void Network::getImagePart(int contentId, int part, uint16_t* onlineImage){
     }
     http.end();
 }
+
+void Network::reportSeen(int statusId){
+    HTTPClient http;
+
+    http.begin("http://192.168.198.190:5000/device/status/" + String(statusId) + "/seen");
+    http.addHeader("Authorization", auth);
+
+    int httpCode = http.PUT("");
+
+    if (httpCode == 200){
+        Serial.println("Opened reported");
+    }else {
+        Serial.println("Failed to report openenig");
+    }
+}

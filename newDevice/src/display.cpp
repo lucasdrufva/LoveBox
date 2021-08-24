@@ -1,41 +1,48 @@
 #include "display.h"
 
 extern Network network;
-extern Display display;
-extern Notifier notifier;
-extern QueueHandle_t lidOpenQueue;
+
+TaskHandle_t displayTaskHandle;
 
 void displayTask(void *parameter)
 {
     Serial.println("Starting display");
+    Display display;
+    display.begin();
+
+    StatusUpdate status;
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
+
     for (;;)
     {
-        StatusUpdate recievedMessage;
-        if (xQueueReceive(messageQueue, &recievedMessage, portMAX_DELAY) == pdPASS)
+        if (ulTaskNotifyTake(pdTRUE, 0) != 0)
         {
-            Serial.print("Received = ");
-            Serial.println(recievedMessage.contentId);
-            if (recievedMessage.type == 1)
+            xSemaphoreTake(currentStatus_mutex, portMAX_DELAY);
+            status = currentStatus;
+            xSemaphoreGive(currentStatus_mutex);
+
+            if (status.type == CONTENT_TYPE_TEXT)
             {
-                String text = network.getText(recievedMessage.contentId);
+                String text = network.getText(status.contentId);
                 Serial.println(text);
                 display.setText(text);
-            }else if(recievedMessage.type == 0){
-                display.updateImage(recievedMessage.contentId);
             }
-            //TODO: Use real notifier type!
-            notifier.startNotifier(recievedMessage.notifier);
-            delay(5000);
-            int data = 0;
-            xQueueSend( lidOpenQueue, &data, portMAX_DELAY );
+            else if (status.type == CONTENT_TYPE_IMAGE)
+            {
+                display.updateImage(status.contentId);
+            }
+            xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_START, eSetValueWithOverwrite);
+
+            //Simulate lid getting opened
+            //vTaskDelay(5000 / portTICK_PERIOD_MS);
+            //xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_OPENED, eSetValueWithOverwrite);
         }
-        taskYIELD();
     }
 }
 
 void startDisplayTask()
 {
-    xTaskCreate(displayTask, "displayTask", 10000, NULL, 1, NULL);
+    xTaskCreate(displayTask, "displayTask", 15000, NULL, 1, &displayTaskHandle);
 }
 
 void Display::begin()
@@ -61,6 +68,6 @@ void Display::updateImage(int contentId)
         network.getImagePart(contentId, currentPart, onlineImage);
         Serial.println("draw");
         tft.drawRGBBitmap((currentPart % 8) * 40, ((currentPart - (currentPart % 8)) / 8) * 60, onlineImage, 40, 60);
-        delay(100);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }

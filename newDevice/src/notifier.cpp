@@ -1,11 +1,12 @@
 #include "notifier.h"
 
-QueueHandle_t lidOpenQueue;
-extern Notifier notifier;
+const BaseType_t NOTIFICATION_EVENT_START = 0x01;
+const BaseType_t NOTIFICATION_EVENT_OPENED = 0x02;
+
+TaskHandle_t notifierTaskHandle;
 
 void Notifier::begin()
 {
-  lidOpenQueue = xQueueCreate(2, sizeof(int));
   strip.begin();
   strip.show();
   strip.setBrightness(255);
@@ -17,19 +18,19 @@ void Notifier::fadeWhite()
   {
     strip.fill(strip.Color(i, i, i, i));
     strip.show();
-    delay(15);
+    vTaskDelay(1 / portTICK_PERIOD_MS);
   }
   for (int i = 256; i > 0; i--)
   {
     strip.fill(strip.Color(i, i, i, i));
     strip.show();
-    delay(15);
+    vTaskDelay(1 / portTICK_PERIOD_MS);
   }
 }
 
 void Notifier::rainbow()
 {
-  for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 256)
+  for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 512)
   {
     for (int i = 0; i < strip.numPixels(); i++)
     {
@@ -37,7 +38,7 @@ void Notifier::rainbow()
       strip.setPixelColor(i, strip.gamma32(strip.ColorHSV(pixelHue)));
     }
     strip.show();
-    delay(10);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
   }
 }
 
@@ -50,27 +51,45 @@ void Notifier::clear()
   strip.show();
 }
 
+void runNotifier()
+{
+}
+
 void notifierTask(void *parameter)
 {
-  int notificationType = (int)parameter;
+  Notifier notifier;
+  notifier.begin();
+  uint32_t ulNotifiedValue;
   for (;;)
   {
-    if (notificationType == 0)
+    xTaskNotifyWait(
+        0x00,
+        0x00,
+        &ulNotifiedValue,
+        10 / portTICK_PERIOD_MS);
+
+    if ((ulNotifiedValue & NOTIFICATION_EVENT_START) != 0)
     {
-      notifier.rainbow();
+      if (currentStatus.notifier == NOTIFICATION_TYPE_RAINBOW)
+      {
+        Serial.println("Rainbow!");
+        notifier.rainbow();
+      }
     }
-    int recievedData;
-    if (xQueueReceive(lidOpenQueue, &recievedData, 0) == pdPASS)
+
+    if ((ulNotifiedValue & NOTIFICATION_EVENT_OPENED) != 0)
     {
+      //Clear state
+      xTaskNotify(notifierTaskHandle, 0x00, eSetValueWithOverwrite);
+
+      Serial.println("Opened");
       notifier.fadeWhite();
       notifier.clear();
-      vTaskDelete(NULL);
-      break;
     }
   }
 }
 
-void Notifier::startNotifier(int notificationType)
+void startNotifierTask()
 {
-  xTaskCreate(notifierTask, "notifierTask", 1000, (void *)notificationType, 1, NULL);
+  xTaskCreate(notifierTask, "Notifier Task", 1024, NULL, 1, &notifierTaskHandle);
 }

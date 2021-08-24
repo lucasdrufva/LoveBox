@@ -1,24 +1,26 @@
 #include "status.h"
 
-QueueHandle_t messageQueue;
-
 extern Network network;
 
-int latestId = 0;
+extern TaskHandle_t displayTaskHandle;
+StatusUpdate currentStatus;
+SemaphoreHandle_t currentStatus_mutex;
 
 void statusTask(void* parameters){
     for(;;){
         StatusUpdate status = network.getStatus();
-        if(status.statusId != latestId && status.statusId != 0){
-            latestId = status.statusId;
-            xQueueSend( messageQueue, &status, portMAX_DELAY );
+        if(status.statusId != currentStatus.statusId && status.statusId != 0){
+            if(xSemaphoreTake( currentStatus_mutex, portMAX_DELAY ) == pdPASS ){
+                currentStatus = status;
+                xTaskNotifyGive(displayTaskHandle);
+                xSemaphoreGive(currentStatus_mutex);
+            }
         }
         vTaskDelay(5000/portTICK_PERIOD_MS);
     }
 }
 
 
-void statusBegin(){
-    messageQueue = xQueueCreate(4, sizeof(StatusUpdate));
+void startStatusTask(){
     xTaskCreate(statusTask, "statusTask", 5000, NULL, 1, NULL);
 }

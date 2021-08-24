@@ -8,11 +8,10 @@
 
 Storage storage;
 Network network;
-Notifier notifier;
-Display display;
-
 
 void setup() {
+  currentStatus_mutex = xSemaphoreCreateMutex();
+
   delay(5000);
 
   Serial.begin(9600);
@@ -22,16 +21,16 @@ void setup() {
   delay(100);
 
   network.begin();
-  display.begin();
-  notifier.begin();
 
   delay(1000);
 
   Serial.println("ESP32 is connected to Wi-Fi network");
 
-  statusBegin();
+  startStatusTask();
   Serial.println("Status started");
+  startNotifierTask();
   startDisplayTask();
+  startLidTask();
 
 }
 

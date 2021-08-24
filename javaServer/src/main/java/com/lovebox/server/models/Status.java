@@ -37,4 +37,6 @@ public class Status {
     private Text text;
 
     private Date date;
+
+    private boolean seen;
 }
