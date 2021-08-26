@@ -4,7 +4,7 @@ import {View, Button} from 'react-native';
 import Dialog from 'react-native-dialog';
 import axios from 'axios';
 
-import {useAuth} from '../AuthProvider';
+import {baseUrl, useAuth} from '../AuthProvider';
 
 export default function AddDeviceButton({updateDevices}) {
   const [addDeviceVisible, setAddDeviceVisible] = useState(false);
@@ -30,7 +30,7 @@ export default function AddDeviceButton({updateDevices}) {
     // Submit
     // on error show error dialog and ask to try again
     axios
-      .post('http://10.0.2.2:5000/user/device/' + inputText, null, {
+      .post(baseUrl + '/user/device/' + inputText, null, {
         auth: auth,
       })
       .then(response => {

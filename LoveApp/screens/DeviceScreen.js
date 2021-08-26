@@ -1,22 +1,42 @@
 import React from 'react';
-import {useState} from 'react';
-import {View, Text, TextInput, Button} from 'react-native';
+import {useState, useEffect} from 'react';
+import {View, Text, TextInput, Button, FlatList} from 'react-native';
 import axios from 'axios';
 import * as ImagePicker from 'react-native-image-picker';
 
-import {useAuth} from '../AuthProvider';
+import {baseUrl, useAuth} from '../AuthProvider';
+import StatusCard from '../components/StatusCard';
 
 export default function DeviceScreen({route}) {
   const name = route.params.name || 'No Name device';
   const [inputText, onChangeInputText] = useState('');
   const [image, setImage] = useState('');
+  const [statuses, setStatuses] = useState([]);
 
   const auth = useAuth().auth;
+
+  useEffect(() => {
+    getStatuses();
+  }, []);
+
+  function getStatuses() {
+    axios
+      .get(baseUrl + '/user/device/' + name + '/status', {
+        auth: auth,
+      })
+      .then(response => {
+        console.log(response.data);
+        setStatuses(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
 
   function postTextStatus() {
     axios
       .post(
-        'http://10.0.2.2:5000/user/device/' + name + '/status/text',
+        baseUrl + '/user/device/' + name + '/status/text',
         {notifier: 0, text: inputText},
         {
           auth: auth,
@@ -25,6 +45,7 @@ export default function DeviceScreen({route}) {
       .then(response => {
         console.log(response.data);
         onChangeInputText('');
+        getStatuses();
       })
       .catch(error => {
         console.log(error);
@@ -76,16 +97,13 @@ export default function DeviceScreen({route}) {
     });
 
     axios
-      .post(
-        'http://10.0.2.2:5000/user/device/' + name + '/status/image',
-        data,
-        {
-          auth: auth,
-        },
-      )
+      .post(baseUrl + '/user/device/' + name + '/status/image', data, {
+        auth: auth,
+      })
       .then(response => {
         console.log(response.data);
         setImage(null);
+        getStatuses();
       })
       .catch(error => {
         console.log(error);
@@ -100,6 +118,12 @@ export default function DeviceScreen({route}) {
       <Text />
       <Button title="pick image" onPress={pickImage} />
       <Button title="post image status" onPress={postImageStatus} />
+      <FlatList
+        data={statuses}
+        renderItem={status => <StatusCard status={status.item} />}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
+      />
     </View>
   );
 }

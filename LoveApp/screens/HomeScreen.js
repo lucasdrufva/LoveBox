@@ -19,7 +19,7 @@ import Dialog from 'react-native-dialog';
 import axios from 'axios';
 import * as ImagePicker from 'react-native-image-picker';
 import {uploadFiles, DocumentDirectoryPath} from 'react-native-fs';
-import {useAuth} from '../AuthProvider';
+import {baseUrl, useAuth} from '../AuthProvider';
 import AddDeviceButton from '../components/AddDeviceButton';
 
 const HomeScreen: () => Node = ({navigation}) => {
@@ -33,7 +33,7 @@ const HomeScreen: () => Node = ({navigation}) => {
 
   function getDevices() {
     axios
-      .get('http://10.0.2.2:5000/user/device', {
+      .get(baseUrl + '/user/device', {
         auth: auth,
       })
       .then(response => {

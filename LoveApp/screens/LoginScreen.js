@@ -1,8 +1,8 @@
 import React from 'react';
 import {useState} from 'react';
-import {SafeAreaView, Text, Button, TextInput} from 'react-native';
+import {SafeAreaView, Text, Button, TextInput, ScrollView} from 'react-native';
 import axios from 'axios';
-import {useAuth} from '../AuthProvider';
+import {baseUrl, useAuth} from '../AuthProvider';
 
 export default function LoginScreen({navigation}) {
   const auth = useAuth();
@@ -10,12 +10,14 @@ export default function LoginScreen({navigation}) {
   const [usernameText, onChangeUsernameText] = useState('');
   const [passwordText, onChangePasswordText] = useState('');
 
+  const [errorText, setErrorText] = useState('');
+
   function register() {
     let user = {
       client: {clientName: usernameText, password: passwordText, type: 'USER'},
     };
     axios
-      .post('http://10.0.2.2:5000/user/register', user, {
+      .post(baseUrl + '/user/register', user, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -27,7 +29,7 @@ export default function LoginScreen({navigation}) {
 
   function checkLogin() {
     axios
-      .get('http://10.0.2.2:5000/user', {
+      .get(baseUrl + '/user', {
         auth: {
           username: usernameText,
           password: passwordText,
@@ -43,6 +45,7 @@ export default function LoginScreen({navigation}) {
       })
       .catch(error => {
         console.log(error);
+        setErrorText(JSON.stringify(error));
       });
   }
 
@@ -55,6 +58,9 @@ export default function LoginScreen({navigation}) {
       <Button title="register" onPress={register} />
       <Text />
       <Button title="login" onPress={checkLogin} />
+      <ScrollView>
+        <Text>{errorText}</Text>
+      </ScrollView>
     </SafeAreaView>
   );
 }
