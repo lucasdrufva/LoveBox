@@ -39,4 +39,6 @@ public class Status {
     private Date date;
 
     private boolean seen;
+
+    private String preview;
 }
