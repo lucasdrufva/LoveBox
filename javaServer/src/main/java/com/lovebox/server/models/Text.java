@@ -22,4 +22,8 @@ public class Text {
 
     @NonNull
     private String text;
+
+    private int color;
+    private int backgroundColor;
+    private int size;
 }

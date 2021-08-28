@@ -15,7 +15,7 @@ class Display
 {
 public:
     void begin();
-    void setText(String text);
+    void setText(TextStatus text);
     void updateImage(int contentId);
 private:
     Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);

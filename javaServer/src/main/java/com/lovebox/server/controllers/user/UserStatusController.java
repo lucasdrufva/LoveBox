@@ -54,6 +54,9 @@ public class UserStatusController {
     @PostMapping("/user/device/{deviceName}/status/text")
     public StatusResponse postTextStatus(@RequestBody StatusTextRequest statusText, @PathVariable String deviceName){
         Text dbText = new Text(statusText.getText());
+        dbText.setColor(statusText.getColor());
+        dbText.setSize(statusText.getSize());
+        dbText.setBackgroundColor(statusText.getBackgroundColor());
         Status status = new Status();
         status.setDate(new Date());
         status.setNotifier(statusText.getNotifier());

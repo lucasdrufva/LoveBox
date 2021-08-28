@@ -108,8 +108,8 @@ StatusUpdate Network::getStatus()
     return message;
 }
 
-String Network::getText(int contentId){
-    String text = "";
+TextStatus Network::getText(int contentId){
+    TextStatus response;
     HTTPClient http;
 
     http.begin("http://192.168.198.190:5000/text/" + String(contentId));
@@ -125,7 +125,10 @@ String Network::getText(int contentId){
 
         deserializeJson(doc, payload);
 
-        text = doc["text"].as<String>();
+        response.text = doc["text"].as<String>();
+        response.color = doc["color"].as<uint16_t>();
+        response.backgroundColor = doc["backgroundColor"].as<uint16_t>();
+        response.size = doc["size"].as<uint8_t>();
         
     }
     else
@@ -134,7 +137,7 @@ String Network::getText(int contentId){
     }
 
     http.end();
-    return text;
+    return response;
 }
 
 //template <typename T, size_t N>

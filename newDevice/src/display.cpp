@@ -23,8 +23,8 @@ void displayTask(void *parameter)
 
             if (status.type == CONTENT_TYPE_TEXT)
             {
-                String text = network.getText(status.contentId);
-                Serial.println(text);
+                TextStatus text = network.getText(status.contentId);
+                Serial.println(text.text);
                 display.setText(text);
             }
             else if (status.type == CONTENT_TYPE_IMAGE)
@@ -50,12 +50,14 @@ void Display::begin()
     tft.begin();
 }
 
-void Display::setText(String text)
+void Display::setText(TextStatus text)
 {
-    tft.fillScreen(ILI9341_BLACK);
+    tft.fillScreen(text.backgroundColor);
     tft.setCursor(0, 0);
     tft.setRotation(1);
-    tft.println(text);
+    tft.setTextColor(text.color);
+    tft.setTextSize(text.size);
+    tft.println(text.text);
 }
 
 void Display::updateImage(int contentId)

@@ -24,6 +24,6 @@ public class TextController {
 
     @GetMapping("/text/{id}")
     public TextResponse getText(@PathVariable Long id){
-        return new TextResponse(textRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)).getText());
+        return TextResponse.fromText(textRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
     }
 }

@@ -14,6 +14,14 @@ typedef struct StatusUpdate
     uint32_t contentId;
 };
 
+typedef struct TextStatus
+{
+    String text;
+    uint16_t color;
+    uint16_t backgroundColor;
+    uint8_t size;
+};
+
 extern StatusUpdate currentStatus;
 extern SemaphoreHandle_t currentStatus_mutex;
 void startStatusTask();
