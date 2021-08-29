@@ -3,11 +3,12 @@ import {useState, useEffect} from 'react';
 import {View, Text, TextInput, Button, FlatList} from 'react-native';
 import axios from 'axios';
 import * as ImagePicker from 'react-native-image-picker';
+import {Picker} from '@react-native-picker/picker';
 
 import {baseUrl, useAuth} from '../AuthProvider';
 import StatusCard from '../components/StatusCard';
 
-export default function DeviceScreen({route}) {
+export default function DeviceScreen({navigation, route}) {
   const name = route.params.name || 'No Name device';
   const [inputText, onChangeInputText] = useState('');
   const [image, setImage] = useState('');
@@ -18,6 +19,12 @@ export default function DeviceScreen({route}) {
   useEffect(() => {
     getStatuses();
   }, []);
+
+  useEffect(() => {
+    navigation.addListener('focus', () => {
+      getStatuses();
+    });
+  }, [navigation]);
 
   function getStatuses() {
     axios
@@ -33,15 +40,11 @@ export default function DeviceScreen({route}) {
       });
   }
 
-  function postTextStatus() {
+  function postTextStatus(textStatus) {
     axios
-      .post(
-        baseUrl + '/user/device/' + name + '/status/text',
-        {notifier: 0, text: inputText},
-        {
-          auth: auth,
-        },
-      )
+      .post(baseUrl + '/user/device/' + name + '/status/text', textStatus, {
+        auth: auth,
+      })
       .then(response => {
         console.log(response.data);
         onChangeInputText('');
@@ -95,6 +98,7 @@ export default function DeviceScreen({route}) {
       type: image.type,
       uri: image.uri,
     });
+    data.set('notifier', 0);
 
     axios
       .post(baseUrl + '/user/device/' + name + '/status/image', data, {
@@ -113,11 +117,19 @@ export default function DeviceScreen({route}) {
   return (
     <View>
       <Text>{name}</Text>
-      <TextInput value={inputText} onChangeText={onChangeInputText} />
-      <Button title="post new text status" onPress={postTextStatus} />
+      <Button
+        title="Post text status"
+        onPress={() => {
+          navigation.navigate('PostText', {device: name});
+        }}
+      />
       <Text />
-      <Button title="pick image" onPress={pickImage} />
-      <Button title="post image status" onPress={postImageStatus} />
+      <Button
+        title="Post image status"
+        onPress={() => {
+          navigation.navigate('PostImage', {device: name});
+        }}
+      />
       <FlatList
         data={statuses}
         renderItem={status => <StatusCard status={status.item} />}

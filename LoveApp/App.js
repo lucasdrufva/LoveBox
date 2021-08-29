@@ -27,7 +27,9 @@ import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import DeviceScreen from './screens/DeviceScreen';
+import PostTextScreen from './screens/PostTextScreen';
 import {AuthProvider} from './AuthProvider';
+import PostImageScreen from './screens/PostImageScreen';
 
 const Stack = createStackNavigator();
 
@@ -43,6 +45,8 @@ const App: () => Node = () => {
             options={{title: 'Welcome'}}
           />
           <Stack.Screen name="Device" component={DeviceScreen} />
+          <Stack.Screen name="PostText" component={PostTextScreen} />
+          <Stack.Screen name="PostImage" component={PostImageScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
