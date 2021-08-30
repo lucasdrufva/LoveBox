@@ -3,39 +3,63 @@
 extern Network network;
 
 TaskHandle_t displayTaskHandle;
+StatusUpdate status;
+Display display;
+
+#include "SymbolFont.h"
+
+void displayHandleNewStatus()
+{
+    xSemaphoreTake(currentStatus_mutex, portMAX_DELAY);
+    status = currentStatus;
+    xSemaphoreGive(currentStatus_mutex);
+
+    if (status.type == CONTENT_TYPE_TEXT)
+    {
+        TextStatus text = network.getText(status.contentId);
+        Serial.println(text.text);
+        display.setText(text);
+    }
+    else if (status.type == CONTENT_TYPE_IMAGE)
+    {
+        display.updateImage(status.contentId);
+    }
+    xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_START, eSetValueWithOverwrite);
+
+    //Simulate lid getting opened
+    //vTaskDelay(5000 / portTICK_PERIOD_MS);
+    //xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_OPENED, eSetValueWithOverwrite);
+}
 
 void displayTask(void *parameter)
 {
     Serial.println("Starting display");
-    Display display;
     display.begin();
 
-    StatusUpdate status;
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
+    uint32_t ulNotifiedValue;
     for (;;)
     {
-        if (ulTaskNotifyTake(pdTRUE, 0) != 0)
+        xTaskNotifyWait(
+            0x00,
+            ULONG_MAX,
+            &ulNotifiedValue,
+            10 / portTICK_PERIOD_MS);
+
+        if ((ulNotifiedValue & DISPLAY_EVENT_NEW_STATUS) != 0)
         {
-            xSemaphoreTake(currentStatus_mutex, portMAX_DELAY);
-            status = currentStatus;
-            xSemaphoreGive(currentStatus_mutex);
+            displayHandleNewStatus();
+        }
 
-            if (status.type == CONTENT_TYPE_TEXT)
-            {
-                TextStatus text = network.getText(status.contentId);
-                Serial.println(text.text);
-                display.setText(text);
-            }
-            else if (status.type == CONTENT_TYPE_IMAGE)
-            {
-                display.updateImage(status.contentId);
-            }
-            xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_START, eSetValueWithOverwrite);
+        if ((ulNotifiedValue & DISPLAY_EVENT_TOUCHED) != 0)
+        {
+            display.handleTouched();
+        }
 
-            //Simulate lid getting opened
-            //vTaskDelay(5000 / portTICK_PERIOD_MS);
-            //xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_OPENED, eSetValueWithOverwrite);
+        if ((ulNotifiedValue & DISPLAY_EVENT_UNTOUCHED) != 0)
+        {
+            display.handleUnTouched();
         }
     }
 }
@@ -48,6 +72,18 @@ void startDisplayTask()
 void Display::begin()
 {
     tft.begin();
+}
+
+void Display::handleTouched(){
+    Serial.println("touched!");
+    tft.setFont(&SymbolFont);
+    tft.drawChar(160,120,0,ILI9341_PINK,ILI9341_BLACK,touchedSize);
+    touchedSize++;
+}
+
+void Display::handleUnTouched(){
+    touchedSize = 0;
+    tft.fillScreen(ILI9341_BLACK);
 }
 
 void Display::setText(TextStatus text)
@@ -70,6 +106,6 @@ void Display::updateImage(int contentId)
         network.getImagePart(contentId, currentPart, onlineImage);
         Serial.println("draw");
         tft.drawRGBBitmap((currentPart % 8) * 40, ((currentPart - (currentPart % 8)) / 8) * 60, onlineImage, 40, 60);
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+        //vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }

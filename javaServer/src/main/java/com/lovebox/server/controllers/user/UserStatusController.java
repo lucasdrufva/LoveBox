@@ -76,7 +76,7 @@ public class UserStatusController {
     }
 
     @PostMapping("/user/device/{deviceName}/status/image")
-    public StatusResponse postImageStatus(@RequestParam("file") MultipartFile file, @PathVariable String deviceName)  throws Exception{
+    public StatusResponse postImageStatus(@RequestParam("file") MultipartFile file, @RequestParam(defaultValue = "0") int notifier, @PathVariable String deviceName)  throws Exception{
         if (file.isEmpty()) {
             return null;
         }
@@ -102,8 +102,7 @@ public class UserStatusController {
         imageRepository.save(dbImage);
         Status status = new Status();
         status.setDate(new Date());
-        //TODO: use real notifier
-        status.setNotifier(0);
+        status.setNotifier(notifier);
         status.setType(Status.TYPE_IMAGE);
         status.setImage(dbImage);
         status.setSeen(false);

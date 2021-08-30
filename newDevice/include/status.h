@@ -2,6 +2,7 @@
 #include <Arduino.h>
 
 #include "network.h"
+#include "display.h"
 
 #define CONTENT_TYPE_IMAGE 0
 #define CONTENT_TYPE_TEXT 1

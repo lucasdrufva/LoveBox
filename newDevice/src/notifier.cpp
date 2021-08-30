@@ -4,15 +4,11 @@ const BaseType_t NOTIFICATION_EVENT_START = 0x01;
 const BaseType_t NOTIFICATION_EVENT_OPENED = 0x02;
 
 TaskHandle_t notifierTaskHandle;
+TaskHandle_t rgbStripTaskHandle;
 
-void Notifier::begin()
-{
-  strip.begin();
-  strip.show();
-  strip.setBrightness(255);
-}
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, 12, NEO_GRB + NEO_KHZ800);
 
-void Notifier::fadeWhite()
+void fadeWhiteStrip()
 {
   for (int i = 0; i < 256; i++)
   {
@@ -28,7 +24,7 @@ void Notifier::fadeWhite()
   }
 }
 
-void Notifier::rainbow()
+void rainbowStrip()
 {
   for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 512)
   {
@@ -42,7 +38,7 @@ void Notifier::rainbow()
   }
 }
 
-void Notifier::clear()
+void clearStrip()
 {
   for (int i = 0; i < strip.numPixels(); i++)
   {
@@ -51,40 +47,51 @@ void Notifier::clear()
   strip.show();
 }
 
-void runNotifier()
+void rgbStripTask(void *parameter)
 {
+  for (;;)
+  {
+    if (currentStatus.notifier == NOTIFICATION_TYPE_RAINBOW)
+    {
+      rainbowStrip();
+    }
+  }
+
+  vTaskDelay(10 / portTICK_PERIOD_MS);
 }
 
 void notifierTask(void *parameter)
 {
-  Notifier notifier;
-  notifier.begin();
+  strip.begin();
+  strip.setBrightness(255);
+
   uint32_t ulNotifiedValue;
   for (;;)
   {
     xTaskNotifyWait(
         0x00,
-        0x00,
+        ULONG_MAX,
         &ulNotifiedValue,
         10 / portTICK_PERIOD_MS);
 
     if ((ulNotifiedValue & NOTIFICATION_EVENT_START) != 0)
     {
-      if (currentStatus.notifier == NOTIFICATION_TYPE_RAINBOW)
+      if (rgbStripTaskHandle == NULL)
       {
-        Serial.println("Rainbow!");
-        notifier.rainbow();
+        xTaskCreate(rgbStripTask, "RGB Strip Task", 1024, NULL, 1, &rgbStripTaskHandle);
       }
     }
 
     if ((ulNotifiedValue & NOTIFICATION_EVENT_OPENED) != 0)
     {
-      //Clear state
-      xTaskNotify(notifierTaskHandle, 0x00, eSetValueWithOverwrite);
-
-      Serial.println("Opened");
-      notifier.fadeWhite();
-      notifier.clear();
+      if (rgbStripTaskHandle != NULL)
+      {
+        vTaskDelete(rgbStripTaskHandle);
+        rgbStripTaskHandle = NULL;
+        Serial.println("Opened");
+        fadeWhiteStrip();
+        clearStrip();
+      }
     }
   }
 }

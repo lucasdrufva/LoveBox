@@ -11,15 +11,26 @@
 #define TFT_DC 22
 #define TFT_CS 21
 
+#define DISPLAY_EVENT_NEW_STATUS 0x01
+#define DISPLAY_EVENT_TOUCHED 0x02
+#define DISPLAY_EVENT_UNTOUCHED 0x04
+
+struct TextStatus;
+
 class Display
 {
 public:
     void begin();
     void setText(TextStatus text);
     void updateImage(int contentId);
+    void handleTouched();
+    void handleUnTouched();
 private:
     Adafruit_ILI9341 tft = Adafruit_ILI9341(TFT_CS, TFT_DC);
     uint16_t onlineImage[2400] = {0};
+    uint16_t touchedSize = 0;
 };
 
 void startDisplayTask();
+
+extern TaskHandle_t displayTaskHandle;

@@ -2,7 +2,6 @@
 
 extern Network network;
 
-extern TaskHandle_t displayTaskHandle;
 StatusUpdate currentStatus;
 SemaphoreHandle_t currentStatus_mutex;
 
@@ -12,7 +11,7 @@ void statusTask(void* parameters){
         if(status.statusId != currentStatus.statusId && status.statusId != 0){
             if(xSemaphoreTake( currentStatus_mutex, portMAX_DELAY ) == pdPASS ){
                 currentStatus = status;
-                xTaskNotifyGive(displayTaskHandle);
+                xTaskNotify(displayTaskHandle, DISPLAY_EVENT_NEW_STATUS, eSetValueWithOverwrite);
                 xSemaphoreGive(currentStatus_mutex);
             }
         }

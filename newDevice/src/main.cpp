@@ -5,14 +5,13 @@
 #include "storage.h"
 #include "display.h"
 #include "notifier.h"
+#include "touchscreen.h"
 
 Storage storage;
 Network network;
 
 void setup() {
   currentStatus_mutex = xSemaphoreCreateMutex();
-
-  delay(5000);
 
   Serial.begin(9600);
 
@@ -31,6 +30,7 @@ void setup() {
   startNotifierTask();
   startDisplayTask();
   startLidTask();
+  startTouchscreenTask();
 
 }
 
