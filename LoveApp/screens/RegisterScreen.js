@@ -14,63 +14,14 @@ import {
 import axios from 'axios';
 import {baseUrl, useAuth} from '../AuthProvider';
 
-export default function LoginScreen({navigation}) {
+export default function RegisterScreen({navigation}) {
   const auth = useAuth();
 
   const [emailText, setEmailText] = useState('');
   const [passwordText, setPasswordText] = useState('');
 
-  const [errorText, setErrorText] = useState('');
-
-  function register() {
-    let user = {
-      client: {clientName: emailText, password: passwordText, type: 'USER'},
-    };
-    axios
-      .post(baseUrl + '/user/register', user, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => {
-        console.log(response.data);
-      });
-  }
-
-  function checkLogin() {
-    axios
-      .get(baseUrl + '/user', {
-        auth: {
-          username: usernameText,
-          password: passwordText,
-        },
-      })
-      .then(response => {
-        console.log(response.data);
-        if (response.data === usernameText) {
-          //success
-          auth.setAuth({username: usernameText, password: passwordText});
-          navigation.navigate('Home');
-        }
-      })
-      .catch(error => {
-        console.log(error);
-        setErrorText(JSON.stringify(error));
-      });
-  }
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* <Text>Username</Text>
-      <TextInput value={usernameText} onChangeText={onChangeUsernameText} />
-      <Text>Password</Text>
-      <TextInput value={passwordText} onChangeText={onChangePasswordText} />
-      <Button title="register" onPress={register} />
-      <Text />
-      <Button title="login" onPress={checkLogin} />
-      <ScrollView>
-        <Text>{errorText}</Text>
-      </ScrollView> */}
       <Image source={require('../assets/logo.png')} style={styles.image} />
       <View style={styles.inputView}>
         <TextInput
@@ -93,12 +44,19 @@ export default function LoginScreen({navigation}) {
         />
       </View>
 
-      <TouchableOpacity>
-        <Text style={styles.forgot_button}>Forgot Password?</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+        <Text style={styles.forgot_button}>Already have an account?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.loginBtn}>
-        <Text style={styles.loginText}>LOGIN</Text>
+      <TouchableOpacity
+        style={styles.registerBtn}
+        onPress={() =>
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          })
+        }>
+        <Text style={styles.loginText}>REGISTER</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -139,7 +97,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
 
-  loginBtn: {
+  registerBtn: {
     width: '80%',
     borderRadius: 25,
     height: 50,
