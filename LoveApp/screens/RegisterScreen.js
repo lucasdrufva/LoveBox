@@ -17,8 +17,32 @@ import {baseUrl, useAuth} from '../AuthProvider';
 export default function RegisterScreen({navigation}) {
   const auth = useAuth();
 
+  //TODO: check for valid email
   const [emailText, setEmailText] = useState('');
   const [passwordText, setPasswordText] = useState('');
+
+  function register() {
+    let user = {
+      client: {clientName: emailText, password: passwordText, type: 'USER'},
+    };
+    axios
+      .post(baseUrl + '/user/register', user, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+        if (response.data === emailText) {
+          //success
+          auth.setAuth({username: emailText, password: passwordText});
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Home'}],
+          });
+        }
+      });
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,14 +72,7 @@ export default function RegisterScreen({navigation}) {
         <Text style={styles.forgot_button}>Already have an account?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.registerBtn}
-        onPress={() =>
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Home'}],
-          })
-        }>
+      <TouchableOpacity style={styles.registerBtn} onPress={register}>
         <Text style={styles.loginText}>REGISTER</Text>
       </TouchableOpacity>
     </SafeAreaView>

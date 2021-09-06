@@ -1,10 +1,10 @@
 import React from 'react';
 import {useState} from 'react';
-import {View, Button} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Dialog from 'react-native-dialog';
 import axios from 'axios';
 
-import {baseUrl, useAuth} from '../AuthProvider';
+import {AuthProvider, baseUrl, useAuth} from '../AuthProvider';
 
 export default function AddDeviceButton({updateDevices}) {
   const [addDeviceVisible, setAddDeviceVisible] = useState(false);
@@ -51,7 +51,12 @@ export default function AddDeviceButton({updateDevices}) {
 
   return (
     <View>
-      <Button title="Add Device" onPress={showAddDeviceDialog} />
+      <TouchableOpacity
+        title="Add Device"
+        onPress={showAddDeviceDialog}
+        style={styles.addDeviceBtn}>
+        <Text>Add Device</Text>
+      </TouchableOpacity>
       <Dialog.Container visible={addDeviceVisible}>
         <Dialog.Title> Add Device </Dialog.Title>
         <Dialog.Description> Enter code shown on screen: </Dialog.Description>
@@ -68,3 +73,14 @@ export default function AddDeviceButton({updateDevices}) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  addDeviceBtn: {
+    marginTop: 30,
+    borderRadius: 25,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFC0CB',
+  },
+});
