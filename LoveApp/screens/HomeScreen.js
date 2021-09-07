@@ -12,6 +12,7 @@ import {
   TextInput,
   FlatList,
   ImageBackground,
+  TouchableOpacity,
 } from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
@@ -74,7 +75,14 @@ const HomeScreen: () => Node = ({navigation}) => {
             </Text>
           )}
 
-          <AddDeviceButton updateDevices={getDevices} />
+          <TouchableOpacity
+            title="Add Device"
+            onPress={() => {
+              navigation.navigate('AddDevice');
+            }}
+            style={styles.addDeviceBtn}>
+            <Text>Add Device</Text>
+          </TouchableOpacity>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -88,5 +96,13 @@ const styles = StyleSheet.create({
     padding: 15,
     flex: 1,
     justifyContent: 'center',
+  },
+  addDeviceBtn: {
+    marginTop: 30,
+    borderRadius: 25,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFC0CB',
   },
 });

@@ -7,6 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import AddDeviceScreen from './screens/AddDeviceScreen';
 import DeviceScreen from './screens/DeviceScreen';
 import PostTextScreen from './screens/PostTextScreen';
 import PostImageScreen from './screens/PostImageScreen';
@@ -48,6 +49,7 @@ export default function Navigation() {
               component={HomeScreen}
               options={{title: 'LoveLocker'}}
             />
+            <Stack.Screen name="AddDevice" component={AddDeviceScreen} />
             <Stack.Screen name="Device" component={DeviceScreen} />
             <Stack.Screen name="PostText" component={PostTextScreen} />
             <Stack.Screen name="PostImage" component={PostImageScreen} />
