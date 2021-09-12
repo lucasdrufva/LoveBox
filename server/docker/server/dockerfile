@@ -1,0 +1,3 @@
+FROM arm32v7/openjdk
+COPY server.jar server.jar
+ENTRYPOINT ["java","-jar","/server.jar"]
