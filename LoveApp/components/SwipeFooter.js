@@ -21,7 +21,7 @@ const SwipeFooter = ({
         justifyContent: leftButtonLabel ? 'space-between' : 'flex-end',
         height: HEIGHT,
         backgroundColor,
-        opacity: 0.7,
+        opacity: 1,
         alignItems: 'center',
         paddingHorizontal: FOOTER_PADDING,
       }}>

@@ -47,7 +47,7 @@ export default function AddDeviceScreen({navigation}) {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#8fffa2',
+            backgroundColor: '#dda0dd',
           }}>
           <Text>
             Håll inne knappen under enheten tills en kod visas på skärmen
@@ -60,9 +60,21 @@ export default function AddDeviceScreen({navigation}) {
           <Text />
           <Text />
           <Text>(Cool animation)</Text>
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
+          <Text />
         </View>
         <SwipeFooter
-          backgroundColor="#8fffa2"
+          backgroundColor="#dda0dda0"
           rightButtonLabel="Next"
           rightButtonPress={() => {
             changePage(1);
@@ -88,7 +100,7 @@ export default function AddDeviceScreen({navigation}) {
           />
         </View>
         <SwipeFooter
-          backgroundColor="#e6bcb3"
+          backgroundColor="#e6bcb3c0"
           rightButtonLabel="Add Device"
           leftButtonLabel="Back"
           leftButtonPress={() => changePage(0)}

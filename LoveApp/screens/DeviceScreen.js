@@ -115,7 +115,7 @@ export default function DeviceScreen({navigation, route}) {
   }
 
   return (
-    <View>
+    <View style={{backgroundColor: 'rgba(255,216,222,255)', flex: 1}}>
       <Text>{name}</Text>
       <Button
         title="Post text status"

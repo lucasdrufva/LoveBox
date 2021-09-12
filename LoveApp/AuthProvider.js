@@ -16,4 +16,4 @@ export function AuthProvider({auth, children}) {
 export const useAuth = () => useContext(AuthContext);
 
 //http://10.0.2.2:5000
-export const baseUrl = 'http://192.168.198.190:5000';
+export const baseUrl = 'http://192.168.198.10:5000';
