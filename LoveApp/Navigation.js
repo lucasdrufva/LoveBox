@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Image} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -16,6 +16,22 @@ import {useAuth} from './AuthProvider';
 const Stack = createStackNavigator();
 
 const AuthNavigator = createStackNavigator();
+
+function LogoTitle() {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}>
+      <Text style={{fontWeight: 'bold', fontSize: 20}}>Annika's Box</Text>
+      <Image
+        style={{width: 40, height: 40, marginLeft: 120}}
+        source={require('./assets/logo.png')}
+      />
+    </View>
+  );
+}
 
 function Auth() {
   return (
@@ -50,7 +66,16 @@ export default function Navigation() {
               options={{title: 'LoveLocker'}}
             />
             <Stack.Screen name="AddDevice" component={AddDeviceScreen} />
-            <Stack.Screen name="Device" component={DeviceScreen} />
+            <Stack.Screen
+              name="Device"
+              component={DeviceScreen}
+              options={{
+                headerTitle: props => <LogoTitle {...props} />,
+                headerStyle: {
+                  backgroundColor: '#b0c4de',
+                },
+              }}
+            />
             <Stack.Screen name="PostText" component={PostTextScreen} />
             <Stack.Screen name="PostImage" component={PostImageScreen} />
           </>

@@ -20,15 +20,18 @@ import {
   Button,
   TextInput,
 } from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import {AuthProvider} from './AuthProvider';
 import Navigation from './Navigation';
 
 const App: () => Node = () => {
   return (
-    <AuthProvider auth={null}>
-      <Navigation />
-    </AuthProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <AuthProvider auth={null}>
+        <Navigation />
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 };
 

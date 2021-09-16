@@ -1,15 +1,19 @@
 import React from 'react';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef, useCallback} from 'react';
 import {View, Text, TextInput, Button, FlatList} from 'react-native';
 import axios from 'axios';
 import * as ImagePicker from 'react-native-image-picker';
 import {Picker} from '@react-native-picker/picker';
+import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 import {baseUrl, useAuth} from '../AuthProvider';
 import StatusCard from '../components/StatusCard';
+import AddStatusButton from '../components/AddStatusButton';
 
 export default function DeviceScreen({navigation, route}) {
-  const name = route.params.name || 'No Name device';
+  const device = route.params.device || {code: '123', name: 'No name device'};
+  const code = device.code;
+  const name = device.name;
   const [inputText, onChangeInputText] = useState('');
   const [image, setImage] = useState('');
   const [statuses, setStatuses] = useState([]);
@@ -28,7 +32,7 @@ export default function DeviceScreen({navigation, route}) {
 
   function getStatuses() {
     axios
-      .get(baseUrl + '/user/device/' + name + '/status', {
+      .get(baseUrl + '/user/device/' + code + '/status', {
         auth: auth,
       })
       .then(response => {
@@ -42,7 +46,7 @@ export default function DeviceScreen({navigation, route}) {
 
   function postTextStatus(textStatus) {
     axios
-      .post(baseUrl + '/user/device/' + name + '/status/text', textStatus, {
+      .post(baseUrl + '/user/device/' + code + '/status/text', textStatus, {
         auth: auth,
       })
       .then(response => {
@@ -101,7 +105,7 @@ export default function DeviceScreen({navigation, route}) {
     data.set('notifier', 0);
 
     axios
-      .post(baseUrl + '/user/device/' + name + '/status/image', data, {
+      .post(baseUrl + '/user/device/' + code + '/status/image', data, {
         auth: auth,
       })
       .then(response => {
@@ -115,27 +119,20 @@ export default function DeviceScreen({navigation, route}) {
   }
 
   return (
-    <View style={{backgroundColor: 'rgba(255,216,222,255)', flex: 1}}>
-      <Text>{name}</Text>
-      <Button
-        title="Post text status"
-        onPress={() => {
-          navigation.navigate('PostText', {device: name});
-        }}
-      />
-      <Text />
-      <Button
-        title="Post image status"
-        onPress={() => {
-          navigation.navigate('PostImage', {device: name});
-        }}
-      />
-      <FlatList
-        data={statuses}
-        renderItem={status => <StatusCard status={status.item} />}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
-      />
-    </View>
+    <BottomSheetModalProvider>
+      <View style={{backgroundColor: 'rgba(255,216,222,255)', flex: 1}}>
+        <Text>{name}</Text>
+        <FlatList
+          data={statuses}
+          renderItem={status => <StatusCard status={status.item} />}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={{
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        />
+        <AddStatusButton code={code} />
+      </View>
+    </BottomSheetModalProvider>
   );
 }

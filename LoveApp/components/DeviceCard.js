@@ -9,10 +9,10 @@ export default function DeviceCard({device}) {
     <TouchableOpacity
       style={styles.card}
       onPress={() => {
-        navigation.navigate('Device', {name: device.name});
+        navigation.navigate('Device', {device: device});
       }}>
       <Image source={require('../assets/logo.png')} style={styles.img} />
-      <Text style={styles.title}>Annika's Box</Text>
+      <Text style={styles.title}>{device.name}</Text>
     </TouchableOpacity>
   );
 }
@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: '#e8fcf6',
     padding: 10,
+    marginBottom: 10,
   },
   img: {
     resizeMode: 'contain',

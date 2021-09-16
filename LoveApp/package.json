@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^4",
     "@react-native-community/masked-view": "^0.1.11",
     "@react-native-picker/picker": "^1.16.7",
     "@react-navigation/native": "^6.0.2",
@@ -20,6 +21,7 @@
     "react": "17.0.1",
     "react-color": "^2.19.3",
     "react-native": "0.64.2",
+    "react-native-bottom-modal": "^0.5.6",
     "react-native-color-wheel": "^0.1.7",
     "react-native-dialog": "^8.2.0",
     "react-native-fs": "^2.18.0",
@@ -28,7 +30,7 @@
     "react-native-image-picker": "^4.0.6",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-pager-view": "^5.4.1",
-    "react-native-reanimated": "^2.2.0",
+    "react-native-reanimated": "^2.2.2",
     "react-native-safe-area-context": "^3.3.0",
     "react-native-screens": "^3.5.0",
     "react-native-shadow-cards": "^1.0.2",
