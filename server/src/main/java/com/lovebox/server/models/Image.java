@@ -28,4 +28,6 @@ public class Image {
 
     private Date date;
 
+    private String key;
+
 }

@@ -8,10 +8,10 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class DeviceResponse {
-    private Long id;
+    private String code;
     private String name;
 
     public static DeviceResponse fromDevice(Device device){
-        return new DeviceResponse(device.getId(), device.getDevice().getClientName());
+        return new DeviceResponse(device.getCode(), device.getName() != null ? device.getName() : device.getCode());
     }
 }

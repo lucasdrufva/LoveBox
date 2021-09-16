@@ -22,16 +22,17 @@ public class DeviceRegisterController {
     DeviceRepository deviceRepository;
 
     @ResponseStatus( HttpStatus.CREATED )
-    @PostMapping("/device/register/{deviceName}")
-    public String registerDevice(@PathVariable String deviceName){
+    @PostMapping("/device/register/{deviceCode}")
+    public String registerDevice(@PathVariable String deviceCode){
         Client client = new Client();
-        client.setClientName(deviceName);
+        client.setClientName(deviceCode);
         client.setPassword(generatePasswordString());
         client.setType(Client.TYPE_DEVICE);
 
         clientRepository.save(client);
 
         Device device = new Device();
+        device.setCode(deviceCode);
         device.setDevice(client);
 
         deviceRepository.save(device);

@@ -1,24 +1,28 @@
 package com.lovebox.server.controllers;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.lovebox.server.ImageService;
 import com.lovebox.server.models.Image;
-import com.lovebox.server.models.ImagePart;
+import com.lovebox.server.models.ImagePartRepository;
 import com.lovebox.server.models.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 class ImageController {
@@ -27,13 +31,18 @@ class ImageController {
     ImageRepository imageRepository;
 
     @Autowired
+    ImagePartRepository imagePartRepository;
+
+    @Autowired
     ImageService imageService;
 
+    @Transactional
     @PostMapping("/image/upload")
     Long uploadImage(@RequestParam("file") MultipartFile file) throws Exception {
         if (file.isEmpty()) {
             return null;
         }
+
         Image dbImage = new Image();
         dbImage.setName(file.getName());
         dbImage.setDate(new Date());
@@ -55,11 +64,13 @@ class ImageController {
         return dbImage.getId();
     }
 
+    @Transactional(readOnly=true)
     @GetMapping(value = "/image/{imageId}/part/{partIndex}")
     ByteArrayResource downloadImage(@PathVariable Long imageId, @PathVariable int partIndex) {
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        byte[] part = image.getParts().get(partIndex).getContent();
+
+        byte[] part = imagePartRepository.findPartsByImage(image).get(partIndex).getContent();
 
         return new ByteArrayResource(part);
     }

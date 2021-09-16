@@ -23,7 +23,7 @@ public class DeviceTouchController {
 
     @PutMapping("/device/touch")
     void putStatusSeen(Principal principal, @RequestParam(defaultValue = "1") int size){
-        Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(principal.getName());
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(principal.getName());
         if(!maybeDevice.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

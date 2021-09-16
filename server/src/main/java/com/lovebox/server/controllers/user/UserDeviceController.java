@@ -7,10 +7,7 @@ import com.lovebox.server.models.User;
 import com.lovebox.server.models.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
@@ -26,9 +23,9 @@ public class UserDeviceController {
     @Autowired
     DeviceRepository deviceRepository;
 
-    @PostMapping("/user/device/{deviceName}")
-    public void registerDevice(Principal principal, @PathVariable String deviceName){
-        Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(deviceName);
+    @PostMapping("/user/device/{deviceCode}")
+    public void registerDevice(Principal principal, @PathVariable String deviceCode){
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(deviceCode);
         if(!maybeDevice.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -54,4 +51,16 @@ public class UserDeviceController {
         User user = maybeUser.get();
         return user.getDevices().stream().map(DeviceResponse::fromDevice).collect(Collectors.toList());
     }
+
+    @PutMapping("/user/device/{code}/name/{name}")
+    void setDeviceName(@PathVariable String code, @PathVariable String name){
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(code);
+        if(!maybeDevice.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        Device device = maybeDevice.get();
+        device.setName(name);
+        deviceRepository.save(device);
+    }
+
 }

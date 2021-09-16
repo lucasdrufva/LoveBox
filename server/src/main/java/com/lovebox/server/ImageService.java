@@ -3,6 +3,7 @@ package com.lovebox.server;
 import com.lovebox.server.models.Image;
 import com.lovebox.server.models.ImagePart;
 import com.lovebox.server.models.ImageRepository;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +25,9 @@ public class ImageService {
     public BufferedImage createImageFromBytes(byte[] imageData) {
         ByteArrayInputStream bais = new ByteArrayInputStream(imageData);
         try {
-            return ImageIO.read(bais);
+            return Thumbnails.of(ImageIO.read(bais)).size(481, 481).asBufferedImage();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+           throw new RuntimeException(e);
         }
     }
 

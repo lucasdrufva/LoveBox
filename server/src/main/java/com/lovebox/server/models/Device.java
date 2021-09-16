@@ -11,8 +11,7 @@ import java.util.List;
 @Setter
 public class Device {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String code;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
@@ -30,4 +29,6 @@ public class Device {
 
     @OneToMany(mappedBy="device")
     private List<Touch> touches;
+
+    private String name;
 }

@@ -1,5 +1,12 @@
 package com.lovebox.server.controllers.user;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.lovebox.server.ImageService;
 import com.lovebox.server.controllers.requests.StatusTextRequest;
 import com.lovebox.server.controllers.responses.StatusResponse;
@@ -17,6 +24,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,11 +44,11 @@ public class UserStatusController {
     @Autowired
     ImageRepository imageRepository;
 
-    @GetMapping("/user/device/{deviceName}/status")
-    public List<StatusResponse> getStatuses(@PathVariable String deviceName,
+    @GetMapping("/user/device/{deviceCode}/status")
+    public List<StatusResponse> getStatuses(@PathVariable String deviceCode,
                             @RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "5") int size){
-        Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(deviceName);
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(deviceCode);
         if(!maybeDevice.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -51,8 +59,8 @@ public class UserStatusController {
         return statuses.stream().map(StatusResponse::fromStatus).collect(Collectors.toList());
     }
 
-    @PostMapping("/user/device/{deviceName}/status/text")
-    public StatusResponse postTextStatus(@RequestBody StatusTextRequest statusText, @PathVariable String deviceName){
+    @PostMapping("/user/device/{deviceCode}/status/text")
+    public StatusResponse postTextStatus(@RequestBody StatusTextRequest statusText, @PathVariable String deviceCode){
         Text dbText = new Text(statusText.getText());
         dbText.setColor(statusText.getColor());
         dbText.setSize(statusText.getSize());
@@ -65,7 +73,7 @@ public class UserStatusController {
         status.setSeen(false);
         status.setPreview(dbText.getText().substring(0, Math.min(dbText.getText().length(), 15)));
 
-        Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(deviceName);
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(deviceCode);
         if(!maybeDevice.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -75,8 +83,8 @@ public class UserStatusController {
         return StatusResponse.fromStatus(statusRepository.save(status));
     }
 
-    @PostMapping("/user/device/{deviceName}/status/image")
-    public StatusResponse postImageStatus(@RequestParam("file") MultipartFile file, @RequestParam(defaultValue = "0") int notifier, @PathVariable String deviceName)  throws Exception{
+    @PostMapping("/user/device/{deviceCode}/status/image")
+    public StatusResponse postImageStatus(@RequestParam("file") MultipartFile file, @RequestParam(defaultValue = "0") int notifier, @PathVariable String deviceCode)  throws Exception{
         if (file.isEmpty()) {
             return null;
         }
@@ -85,6 +93,42 @@ public class UserStatusController {
         dbImage.setDate(new Date());
 
         String fileName = file.getOriginalFilename();
+
+        AWSCredentials credentials = new BasicAWSCredentials(
+                "<AWS accesskey>",
+                "<AWS secretkey>"
+        );
+
+        final AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration("http://localstack:4566", "us-east-1");
+        AmazonS3 s3client = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withEndpointConfiguration(endpoint)
+                .withPathStyleAccessEnabled(true)
+                .build();
+
+        //TODO: use real s3 bucket
+        String bucketName = "test";
+        if(s3client.doesBucketExist(bucketName)) {
+            System.out.println("Bucket exist");
+        }else {
+            s3client.createBucket(bucketName);
+        }
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(file.getSize());
+
+        String s3Key = UUID.randomUUID().toString();
+
+        dbImage.setKey(s3Key);
+
+        s3client.putObject(
+                bucketName,
+                dbImage.getKey(),
+                file.getInputStream(),
+                metadata
+        );
+        System.out.println(s3client.getUrl(bucketName, s3Key));
 
         BufferedImage image = null;
         try {
@@ -106,9 +150,9 @@ public class UserStatusController {
         status.setType(Status.TYPE_IMAGE);
         status.setImage(dbImage);
         status.setSeen(false);
-        status.setPreview(fileName.substring(0, Math.min(fileName.length(), 15)));
+        status.setPreview(s3Key);
 
-        Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(deviceName);
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(deviceCode);
         if(!maybeDevice.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

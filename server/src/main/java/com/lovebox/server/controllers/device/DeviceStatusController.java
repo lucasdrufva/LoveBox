@@ -26,7 +26,7 @@ public class DeviceStatusController {
 
     @GetMapping("/device/status")
     StatusResponse getStatus(Principal principal){
-        Optional<Device> maybeDevice = deviceRepository.findFirstByDeviceClientName(principal.getName());
+        Optional<Device> maybeDevice = deviceRepository.findFirstByCode(principal.getName());
         if(!maybeDevice.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
