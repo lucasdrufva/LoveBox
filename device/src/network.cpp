@@ -1,11 +1,14 @@
 #include "network.h"
 
 extern Storage storage;
+SemaphoreHandle_t network_mutex;
 
 void Network::begin()
 {
-    WiFiManager wm;
-    wm.autoConnect();
+    network_mutex = xSemaphoreCreateMutex();
+    xSemaphoreTake(network_mutex, portMAX_DELAY);
+    wm.setAPCallback(configWifiCallback);
+    wm.autoConnect("LoveLocker", storage.getChipId().c_str());
     delay(1000);
     Serial.println("ESP32 is connected to Wi-Fi network");
 
@@ -16,7 +19,20 @@ void Network::begin()
         registerDevice();
     }
     Serial.println("Check again");
-    checkRegistred();
+    if(checkRegistred()){
+        xSemaphoreGive(network_mutex);
+    }else {
+        //TODO: Show on screen
+        Serial.println("Failed to auth client");
+    }
+}
+
+void Network::configWifiCallback (WiFiManager *myWiFiManager) {
+  Serial.println("Entered config mode");
+  Serial.println(WiFi.softAPIP());
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+
+  xTaskNotify(displayTaskHandle, DISPLAY_EVENT_CONFIG, eSetValueWithOverwrite);
 }
 
 void Network::registerDevice()
@@ -39,7 +55,7 @@ void Network::registerDevice()
     }
     else
     {
-        Serial.println("Error on HTTP request");
+        Serial.println("Error on register device request");
     }
 
     http.end();
@@ -70,7 +86,7 @@ bool Network::checkRegistred()
         }
         else
         {
-            Serial.println("Error on HTTP request");
+            Serial.println("Error on auth request");
         }
 
         http.end();
@@ -80,6 +96,7 @@ bool Network::checkRegistred()
 
 StatusUpdate Network::getStatus()
 {
+    xSemaphoreTake(network_mutex, portMAX_DELAY);
     StatusUpdate message;
     HTTPClient http;
 
@@ -104,14 +121,16 @@ StatusUpdate Network::getStatus()
     else
     {
         message.statusId = 0;
-        Serial.println("Error on HTTP request");
+        Serial.println("Error on get status request");
     }
 
     http.end();
+    xSemaphoreGive(network_mutex);
     return message;
 }
 
 TextStatus Network::getText(int contentId){
+    xSemaphoreTake(network_mutex, portMAX_DELAY);
     TextStatus response;
     HTTPClient http;
 
@@ -132,14 +151,19 @@ TextStatus Network::getText(int contentId){
         response.color = doc["color"].as<uint16_t>();
         response.backgroundColor = doc["backgroundColor"].as<uint16_t>();
         response.size = doc["size"].as<uint8_t>();
+
+        if(response.size == 0){
+            response.size = 1;
+        }
         
     }
     else
     {
-        Serial.println("Error on HTTP request");
+        Serial.println("Error on get text request");
     }
 
     http.end();
+    xSemaphoreGive(network_mutex);
     return response;
 }
 
@@ -157,6 +181,7 @@ void byteToWord(uint8_t byteArray[], uint16_t* wordArray, int len)
 
 //template <typename T, size_t N>
 void Network::getImagePart(int contentId, int part, uint16_t* onlineImage){
+    xSemaphoreTake(network_mutex, portMAX_DELAY);
     HTTPClient http;
 
     // Your Domain name with URL path or IP address with path
@@ -181,9 +206,11 @@ void Network::getImagePart(int contentId, int part, uint16_t* onlineImage){
       Serial.println(httpResponseCode);
     }
     http.end();
+    xSemaphoreGive(network_mutex);
 }
 
 void Network::reportSeen(int statusId){
+    xSemaphoreTake(network_mutex, portMAX_DELAY);
     HTTPClient http;
 
     http.begin(baseUrl + "/device/status/" + String(statusId) + "/seen");
@@ -198,9 +225,11 @@ void Network::reportSeen(int statusId){
     }
 
     http.end();
+    xSemaphoreGive(network_mutex);
 }
 
 void Network::sendTouch(int size){
+    xSemaphoreTake(network_mutex, portMAX_DELAY);
     HTTPClient http;
 
     http.begin(baseUrl + "/device/touch?size=" + String(size));
@@ -214,4 +243,5 @@ void Network::sendTouch(int size){
         Serial.println("Failed to send touch");
     }
     http.end();
+    xSemaphoreGive(network_mutex);
 }

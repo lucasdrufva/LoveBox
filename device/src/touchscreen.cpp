@@ -9,42 +9,51 @@ uint16_t touchedSize = 0;
 #define XM 15
 #define YM 27
 
-int getY()
+int getX()
 {
-    pinMode(YP, OUTPUT);
-    digitalWrite(YP, HIGH);
-    pinMode(YM, OUTPUT);
-    digitalWrite(YM, LOW);
-
+    pinMode(XP, OUTPUT);
+    digitalWrite(XP, HIGH);
     pinMode(XM, OUTPUT);
     digitalWrite(XM, LOW);
 
-    return analogRead(XP);
+    pinMode(YM, OUTPUT);
+    digitalWrite(YM, LOW);
+
+    return analogRead(YP);
 }
 
 void touchscreenTask(void *parameters)
 {
     for (;;)
     {
-        if (getY() > 100)
+        if (getX() > 200)
         {
-            vTaskDelay(100/ portTICK_PERIOD_MS);
-            if(getY() > 100){
+            vTaskDelay(100 / portTICK_PERIOD_MS);
+            if (getX() > 200)
+            {
                 touchedSize++;
                 xTaskNotify(displayTaskHandle, DISPLAY_EVENT_TOUCHED, eSetValueWithOverwrite);
+            }
+            else
+            {
+                continue;
             }
         }
         else
         {
-            if (touchedSize > 0)
+            if (touchedSize > 1)
             {
                 touchedSize = 0;
                 xTaskNotify(displayTaskHandle, DISPLAY_EVENT_UNTOUCHED, eSetValueWithOverwrite);
                 network.sendTouch(touchedSize);
-
+            }
+            else if (touchedSize > 0)
+            {
+                touchedSize = 0;
+                xTaskNotify(displayTaskHandle, DISPLAY_EVENT_NEW_STATUS, eSetValueWithOverwrite);
             }
         }
-        vTaskDelay(300 / portTICK_PERIOD_MS);
+        vTaskDelay(250 / portTICK_PERIOD_MS);
     }
 }
 

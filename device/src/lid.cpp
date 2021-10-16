@@ -14,9 +14,7 @@ void lidTask(void* parameter){
     pinMode(34, INPUT);
 
     for(;;){
-        //hallSensorValue = analogRead(A2);
-        //if(hallSensorValue < 3000){
-        if(digitalRead(34)){
+        if(!digitalRead(34)){
             if(!lidOpen){
                 lidOpen = true;
                 xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_OPENED, eSetValueWithOverwrite);

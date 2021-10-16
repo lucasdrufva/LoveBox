@@ -26,10 +26,6 @@ void displayHandleNewStatus()
         display.updateImage(status.contentId);
     }
     xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_START, eSetValueWithOverwrite);
-
-    //Simulate lid getting opened
-    //vTaskDelay(5000 / portTICK_PERIOD_MS);
-    //xTaskNotify(notifierTaskHandle, NOTIFICATION_EVENT_OPENED, eSetValueWithOverwrite);
 }
 
 void displayTask(void *parameter)
@@ -76,7 +72,7 @@ void displayTask(void *parameter)
 
 void startDisplayTask()
 {
-    xTaskCreate(displayTask, "displayTask", 20000, NULL, 1, &displayTaskHandle);
+    xTaskCreate(displayTask, "displayTask", 21000, NULL, 1, &displayTaskHandle);
 }
 
 void Display::begin()
@@ -89,6 +85,8 @@ void Display::handleTouched(){
     Serial.println("touched!");
     tft.setFont(&SymbolFont);
     tft.drawChar(160,120,0,ILI9341_PINK,ILI9341_BLACK,touchedSize);
+    //reset to default font
+    tft.setFont();
     touchedSize++;
 }
 

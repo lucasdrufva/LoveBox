@@ -6,6 +6,9 @@
 #include "status.h"
 
 #define NOTIFICATION_TYPE_RAINBOW 0
+#define NOTIFICATION_TYPE_FLASH 1
+#define NOTIFICATION_TYPE_SNAKE 2
+#define NOTIFICATION_TYPE_TWINKLE 3
 
 void startNotifierTask();
 

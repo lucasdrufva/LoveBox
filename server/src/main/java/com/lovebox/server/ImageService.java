@@ -8,7 +8,6 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 import com.lovebox.server.models.Image;
 import com.lovebox.server.models.ImagePart;
 import com.lovebox.server.models.ImageRepository;
-import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

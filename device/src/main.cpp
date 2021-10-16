@@ -25,8 +25,6 @@ void setup() {
 
   delay(1000);
 
-  Serial.println("ESP32 is connected to Wi-Fi network");
-
   startStatusTask();
   Serial.println("Status started");
   startNotifierTask();

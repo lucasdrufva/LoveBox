@@ -9,7 +9,7 @@
 #include "storage.h"
 #include "status.h"
 
-const String baseUrl = "http://192.168.198.10:5000";
+const String baseUrl = "http://192.168.198.190:5000";
 
 struct StatusUpdate;
 struct TextStatus;
@@ -28,4 +28,6 @@ private:
     String auth;
     void registerDevice();
     bool checkRegistred();
+    static void configWifiCallback (WiFiManager *myWiFiManager);
+    WiFiManager wm;
 };
