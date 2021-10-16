@@ -1,22 +1,87 @@
-import React from 'react';
-import {View, Text} from 'react-native';
-import {Picker} from '@react-native-picker/picker';
+import React, {useState, useEffect} from 'react';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
+import CP from 'react-native-hsv-color-picker';
 
-export default function ColorPicker({color, setColor}) {
+import {hslToRgb} from '../lib/colorTools';
+
+function ColorPickerContainer(props) {
+  const {children, hide, style} = props;
+  if (hide) {
+    return null;
+  }
   return (
-    <View>
-      <Picker
-        mode="dropdown"
-        selectedValue={color}
-        style={{height: 50, width: 150}}
-        onValueChange={(itemValue, itemIndex) => setColor(itemValue)}>
-        <Picker.Item label="White" value={65500} />
-        <Picker.Item label="Yellow" value={60000} />
-        <Picker.Item label="Pink" value={50000} />
-        <Picker.Item label="Green" value={1000} />
-        <Picker.Item label="Blue" value={500} />
-        <Picker.Item label="Black" value={0} />
-      </Picker>
+    <View {...this.props} style={style}>
+      {children}
     </View>
   );
 }
+
+export default function ColorPicker({show, onChange, startHSL}) {
+  const [pickerColor, setPickerColor] = useState(startHSL);
+
+  useEffect(() => {
+    onChange(hslToRgb(pickerColor.hue / 360, pickerColor.sat, pickerColor.val));
+  }, [pickerColor, onChange]);
+
+  return (
+    <View>
+      <ColorPickerContainer hide={!show}>
+        <CP
+          satValPickerHue={pickerColor.hue}
+          satValPickerSaturation={pickerColor.sat}
+          satValPickerValue={pickerColor.val}
+          huePickerHue={pickerColor.hue}
+          onHuePickerPress={({hue}) => {
+            setPickerColor({...pickerColor, hue: hue});
+          }}
+          onSatValPickerPress={({saturation, value}) => {
+            setPickerColor({...pickerColor, sat: saturation, val: value});
+          }}
+        />
+      </ColorPickerContainer>
+    </View>
+  );
+}
+
+export function ExpandableColorPicker({onChangeColor, startHSL}) {
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [color, setColor] = useState([255, 255, 255]);
+
+  function getTextColorStyle() {
+    return {
+      backgroundColor: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+    };
+  }
+
+  useEffect(() => {
+    onChangeColor(color);
+  }, [color, onChangeColor]);
+
+  return (
+    <>
+      <TouchableOpacity
+        style={{...styles.colorView, ...getTextColorStyle()}}
+        onPress={() => {
+          setShowColorPicker(!showColorPicker);
+        }}
+      />
+      <ColorPicker
+        show={showColorPicker}
+        onChange={setColor}
+        startHSL={startHSL}
+      />
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  colorView: {
+    flex: 3,
+    borderRadius: 7,
+    backgroundColor: '#e8fcf6',
+    padding: 10,
+    paddingBottom: 25,
+    margin: 10,
+    elevation: 10,
+  },
+});

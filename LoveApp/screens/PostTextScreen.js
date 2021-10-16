@@ -4,7 +4,7 @@ import {View, Text, TextInput, Button} from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import {StackActions} from '@react-navigation/stack';
 
-import ColorPicker from '../components/ColorPicker';
+import ColorPicker from '../components/OldColorPicker';
 import {usePostTextStatus} from '../lib/api';
 
 export default function PostTextScreen({navigation, route}) {

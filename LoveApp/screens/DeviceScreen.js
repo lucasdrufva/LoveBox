@@ -8,7 +8,7 @@ import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 
 import {baseUrl, useAuth} from '../AuthProvider';
 import StatusCard from '../components/StatusCard';
-import AddStatusButton from '../components/AddStatusButton';
+import BottomBar from '../components/DeviceBottomBar';
 
 export default function DeviceScreen({navigation, route}) {
   const device = route.params.device || {code: '123', name: 'No name device'};
@@ -131,7 +131,7 @@ export default function DeviceScreen({navigation, route}) {
             alignItems: 'center',
           }}
         />
-        <AddStatusButton code={code} />
+        <BottomBar code={code} />
       </View>
     </BottomSheetModalProvider>
   );

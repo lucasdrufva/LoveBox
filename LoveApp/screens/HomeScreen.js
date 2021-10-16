@@ -58,15 +58,7 @@ const HomeScreen: () => Node = ({navigation}) => {
           {devices.length > 0 ? (
             <FlatList
               data={devices}
-              renderItem={device => (
-                // <Button
-                //   title={device.item.name}
-                //   onPress={() =>
-                //     navigation.navigate('Device', {name: device.item.name})
-                //   }
-                // />
-                <DeviceCard device={device.item} />
-              )}
+              renderItem={device => <DeviceCard device={device.item} />}
               keyExtractor={(item, index) => index.toString()}
             />
           ) : (
@@ -78,7 +70,7 @@ const HomeScreen: () => Node = ({navigation}) => {
           <TouchableOpacity
             title="Add Device"
             onPress={() => {
-              navigation.navigate('AddDevice');
+              navigation.navigate('AddDevice', {refresh: getDevices});
             }}
             style={styles.addDeviceBtn}>
             <Text>Add Device</Text>

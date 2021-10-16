@@ -3,6 +3,8 @@ import {useRef, useCallback} from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import {BottomSheetModal, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {useNavigation} from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import {statusTypes} from '../screens/NewPostScreen';
 
 export default function AddStatusButton({code}) {
   const navigation = useNavigation();
@@ -20,7 +22,7 @@ export default function AddStatusButton({code}) {
   return (
     <>
       <TouchableOpacity style={styles.add} onPressIn={handleOpenModal}>
-        <Text>Post Status</Text>
+        <Icon name="plus" size={30} color="#555" />
       </TouchableOpacity>
       <BottomSheetModal
         ref={bottomSheetModalRef}
@@ -32,14 +34,20 @@ export default function AddStatusButton({code}) {
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.navigate('PostText', {device: code});
+              navigation.navigate('PostStatus', {
+                device: code,
+                type: statusTypes.TEXT,
+              });
             }}>
             <Text>New Text Status</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
-              navigation.navigate('PostImage', {device: code});
+              navigation.navigate('PostStatus', {
+                device: code,
+                type: statusTypes.IMAGE,
+              });
             }}>
             <Text>New Image Status</Text>
           </TouchableOpacity>
@@ -51,10 +59,7 @@ export default function AddStatusButton({code}) {
 
 const styles = StyleSheet.create({
   add: {
-    position: 'absolute',
-    bottom: 10,
-    left: 100,
-    right: 100,
+    flex: 1,
     borderRadius: 15,
     backgroundColor: '#49f2ba',
     padding: 10,

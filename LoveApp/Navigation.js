@@ -10,12 +10,15 @@ import RegisterScreen from './screens/RegisterScreen';
 import AddDeviceScreen from './screens/AddDeviceScreen';
 import DeviceScreen from './screens/DeviceScreen';
 import PostTextScreen from './screens/PostTextScreen';
+import NewPostScreen from './screens/NewPostScreen';
 import PostImageScreen from './screens/PostImageScreen';
 import {useAuth} from './AuthProvider';
 
 const Stack = createStackNavigator();
 
 const AuthNavigator = createStackNavigator();
+
+const headerColor = '#b0c4de';
 
 function LogoTitle() {
   return (
@@ -63,7 +66,12 @@ export default function Navigation() {
             <Stack.Screen
               name="Home"
               component={HomeScreen}
-              options={{title: 'LoveLocker'}}
+              options={{
+                title: 'LoveLocker',
+                headerStyle: {
+                  backgroundColor: headerColor,
+                },
+              }}
             />
             <Stack.Screen name="AddDevice" component={AddDeviceScreen} />
             <Stack.Screen
@@ -72,12 +80,19 @@ export default function Navigation() {
               options={{
                 headerTitle: props => <LogoTitle {...props} />,
                 headerStyle: {
-                  backgroundColor: '#b0c4de',
+                  backgroundColor: headerColor,
                 },
               }}
             />
-            <Stack.Screen name="PostText" component={PostTextScreen} />
-            <Stack.Screen name="PostImage" component={PostImageScreen} />
+            <Stack.Screen
+              name="PostStatus"
+              component={NewPostScreen}
+              options={{
+                headerStyle: {
+                  backgroundColor: headerColor,
+                },
+              }}
+            />
           </>
         )}
       </Stack.Navigator>

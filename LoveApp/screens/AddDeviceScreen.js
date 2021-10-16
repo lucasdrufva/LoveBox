@@ -7,8 +7,10 @@ import SwipeFooter from '../components/SwipeFooter';
 import SwipePage from '../components/SwipePage';
 import {baseUrl, useAuth} from '../AuthProvider';
 
-export default function AddDeviceScreen({navigation}) {
+export default function AddDeviceScreen({navigation, route}) {
   const [code, setCode] = useState('');
+
+  const refreshDevices = route.params.refresh;
 
   const pagerRef = useRef(null);
   const inputRef = useRef(null);
@@ -31,6 +33,7 @@ export default function AddDeviceScreen({navigation}) {
       .then(response => {
         console.log(response);
         //TODO: Trigger rerender of device list
+        refreshDevices();
         navigation.pop();
       })
       .catch(error => {
