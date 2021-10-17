@@ -1,15 +1,17 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {useDevice} from '../DeviceContext';
 
 export default function DeviceCard({device}) {
   const navigation = useNavigation();
-  console.log(device);
+  const setCurrentDevice = useDevice().setDevice;
   return (
     <TouchableOpacity
       style={styles.card}
       onPress={() => {
-        navigation.navigate('Device', {device: device});
+        setCurrentDevice(device);
+        navigation.navigate('Device');
       }}>
       <Image source={require('../assets/logo.png')} style={styles.img} />
       <Text style={styles.title}>{device.name}</Text>

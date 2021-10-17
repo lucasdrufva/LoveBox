@@ -9,9 +9,10 @@ import {BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import {baseUrl, useAuth} from '../AuthProvider';
 import StatusCard from '../components/StatusCard';
 import BottomBar from '../components/DeviceBottomBar';
+import {useDevice} from '../DeviceContext';
 
-export default function DeviceScreen({navigation, route}) {
-  const device = route.params.device || {code: '123', name: 'No name device'};
+export default function DeviceScreen({navigation}) {
+  const device = useDevice().device;
   const code = device.code;
   const name = device.name;
   const [inputText, onChangeInputText] = useState('');
@@ -121,7 +122,6 @@ export default function DeviceScreen({navigation, route}) {
   return (
     <BottomSheetModalProvider>
       <View style={{backgroundColor: 'rgba(255,216,222,255)', flex: 1}}>
-        <Text>{name}</Text>
         <FlatList
           data={statuses}
           renderItem={status => <StatusCard status={status.item} />}
@@ -131,7 +131,7 @@ export default function DeviceScreen({navigation, route}) {
             alignItems: 'center',
           }}
         />
-        <BottomBar code={code} />
+        <BottomBar />
       </View>
     </BottomSheetModalProvider>
   );

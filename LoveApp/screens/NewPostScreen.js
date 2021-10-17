@@ -13,6 +13,7 @@ import * as ImagePicker from 'react-native-image-picker';
 
 import {ExpandableColorPicker} from '../components/ColorPicker';
 import NotifierPicker from '../components/NotifierPicker';
+import {useDevice} from '../DeviceContext';
 
 import {usePostTextStatus, usePostImageStatus} from '../lib/api';
 import {RGB888toRGB565} from '../lib/colorTools';
@@ -29,8 +30,10 @@ export default function NewPostScreen({navigation, route}) {
   const [notifier, setNotifier] = useState(0);
   const [image, setImage] = useState('');
 
-  const postText = usePostTextStatus(route.params.device);
-  const postImage = usePostImageStatus(route.params.device);
+  const code = useDevice().device.code;
+
+  const postText = usePostTextStatus(code);
+  const postImage = usePostImageStatus(code);
   const type = route.params.type;
 
   async function pickImage() {

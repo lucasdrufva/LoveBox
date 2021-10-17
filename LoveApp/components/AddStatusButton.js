@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {statusTypes} from '../screens/NewPostScreen';
 
-export default function AddStatusButton({code}) {
+export default function AddStatusButton() {
   const navigation = useNavigation();
   const bottomSheetModalRef = useRef(null);
 
@@ -35,7 +35,6 @@ export default function AddStatusButton({code}) {
             style={styles.button}
             onPress={() => {
               navigation.navigate('PostStatus', {
-                device: code,
                 type: statusTypes.TEXT,
               });
             }}>
@@ -45,7 +44,6 @@ export default function AddStatusButton({code}) {
             style={styles.button}
             onPress={() => {
               navigation.navigate('PostStatus', {
-                device: code,
                 type: statusTypes.IMAGE,
               });
             }}>

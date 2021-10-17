@@ -17,13 +17,14 @@ import {
 
 import {NavigationContainer} from '@react-navigation/native';
 import Dialog from 'react-native-dialog';
-
 import axios from 'axios';
 import * as ImagePicker from 'react-native-image-picker';
 import {uploadFiles, DocumentDirectoryPath} from 'react-native-fs';
+
 import {baseUrl, useAuth} from '../AuthProvider';
 import AddDeviceButton from '../components/AddDeviceButton';
 import DeviceCard from '../components/DeviceCard';
+import {useDevice} from '../DeviceContext';
 
 const HomeScreen: () => Node = ({navigation}) => {
   const [devices, setDevices] = useState([]);
@@ -33,6 +34,14 @@ const HomeScreen: () => Node = ({navigation}) => {
   useEffect(() => {
     getDevices();
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getDevices();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   function getDevices() {
     axios

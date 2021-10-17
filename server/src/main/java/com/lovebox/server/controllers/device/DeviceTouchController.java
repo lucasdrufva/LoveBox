@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +21,9 @@ public class DeviceTouchController {
 
     @Autowired
     DeviceRepository deviceRepository;
+
+    @Autowired
+    NotificationRepository notificationRepository;
 
     @PutMapping("/device/touch")
     void putStatusSeen(Principal principal, @RequestParam(defaultValue = "1") int size){
@@ -34,5 +38,14 @@ public class DeviceTouchController {
         touch.setSize(size);
         device.getTouches().add(touch);
         deviceRepository.save(device);
+
+        List<User> users = device.getUsers();
+        for (User user: users) {
+            Notification notification = new Notification();
+            notification.setDate(new Date());
+            notification.setUser(user);
+            notification.setMessage("" + device.getName() + " sent love of size " + size);
+            notificationRepository.save(notification);
+        }
     }
 }

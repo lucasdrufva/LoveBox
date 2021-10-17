@@ -54,6 +54,8 @@ public class UserStatusController {
         }
         Device device = maybeDevice.get();
 
+        //TODO:Check if current user is registered for device
+
         Pageable paging = PageRequest.of(page, size);
         List<Status> statuses = statusRepository.findByDeviceOrderByDateDesc(device, paging).getContent();
         return statuses.stream().map(StatusResponse::fromStatus).collect(Collectors.toList());

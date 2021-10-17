@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Children} from 'react';
 import {View, Text, Image} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
@@ -13,6 +13,9 @@ import PostTextScreen from './screens/PostTextScreen';
 import NewPostScreen from './screens/NewPostScreen';
 import PostImageScreen from './screens/PostImageScreen';
 import {useAuth} from './AuthProvider';
+import DeviceOptionsScreen from './screens/DeviceOptionsScreen';
+import {useDevice} from './DeviceContext';
+import InboxScreen from './screens/InboxScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,18 +23,26 @@ const AuthNavigator = createStackNavigator();
 
 const headerColor = '#b0c4de';
 
-function LogoTitle() {
+function LogoTitle({children}) {
+  const name = useDevice().device.name;
+
   return (
     <View
       style={{
+        width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
       }}>
-      <Text style={{fontWeight: 'bold', fontSize: 20}}>Annika's Box</Text>
-      <Image
-        style={{width: 40, height: 40, marginLeft: 120}}
-        source={require('./assets/logo.png')}
-      />
+      <View>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>{name}</Text>
+      </View>
+      <View>
+        <Image
+          style={{width: 40, height: 40, marginRight: 20}}
+          source={require('./assets/logo.png')}
+        />
+      </View>
     </View>
   );
 }
@@ -78,16 +89,37 @@ export default function Navigation() {
               name="Device"
               component={DeviceScreen}
               options={{
-                headerTitle: props => <LogoTitle {...props} />,
                 headerStyle: {
                   backgroundColor: headerColor,
                 },
+                headerTitle: props => <LogoTitle {...props} />,
               }}
             />
             <Stack.Screen
               name="PostStatus"
               component={NewPostScreen}
               options={{
+                title: 'New Status',
+                headerStyle: {
+                  backgroundColor: headerColor,
+                },
+              }}
+            />
+            <Stack.Screen
+              name="DeviceOptions"
+              component={DeviceOptionsScreen}
+              options={{
+                title: 'Device Options',
+                headerStyle: {
+                  backgroundColor: headerColor,
+                },
+              }}
+            />
+            <Stack.Screen
+              name="Inbox"
+              component={InboxScreen}
+              options={{
+                title: 'Inbox',
                 headerStyle: {
                   backgroundColor: headerColor,
                 },

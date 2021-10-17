@@ -1,22 +1,37 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {useNavigation} from '@react-navigation/native';
 
 import AddStatusButton from '../components/AddStatusButton';
 
-export default function BottomBar({code}) {
+export default function BottomBar() {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => {
+          navigation.navigate('Home');
+        }}>
         <Icon name="bars" size={30} color="#555" />
         <Text>Devices</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => {
+          navigation.navigate('DeviceOptions');
+        }}>
         <Icon name="cog" size={30} color="#555" />
         <Text>Options</Text>
       </TouchableOpacity>
-      <AddStatusButton code={code} />
-      <TouchableOpacity style={styles.item}>
+      <AddStatusButton />
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => {
+          navigation.navigate('Inbox');
+        }}>
         <Icon name="envelope" size={30} color="#555" />
         <Text>Inbox</Text>
       </TouchableOpacity>

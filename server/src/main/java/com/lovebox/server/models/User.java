@@ -23,4 +23,7 @@ public class User {
 
     @ManyToMany(mappedBy = "users")
     private List<Device> devices;
+
+    @OneToMany(mappedBy="user")
+    private List<Notification> notifications;
 }
