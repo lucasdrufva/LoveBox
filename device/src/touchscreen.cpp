@@ -43,9 +43,9 @@ void touchscreenTask(void *parameters)
         {
             if (touchedSize > 1)
             {
-                touchedSize = 0;
                 xTaskNotify(displayTaskHandle, DISPLAY_EVENT_UNTOUCHED, eSetValueWithOverwrite);
                 network.sendTouch(touchedSize);
+                touchedSize = 0;
             }
             else if (touchedSize > 0)
             {

@@ -7,6 +7,8 @@ void Network::begin()
 {
     network_mutex = xSemaphoreCreateMutex();
     xSemaphoreTake(network_mutex, portMAX_DELAY);
+    //wm.resetSettings();
+    Serial.println(storage.getChipId().c_str());
     wm.setAPCallback(configWifiCallback);
     wm.autoConnect("LoveLocker", storage.getChipId().c_str());
     delay(1000);
@@ -31,6 +33,7 @@ void Network::configWifiCallback (WiFiManager *myWiFiManager) {
   Serial.println("Entered config mode");
   Serial.println(WiFi.softAPIP());
   Serial.println(myWiFiManager->getConfigPortalSSID());
+  Serial.println(storage.getChipId().c_str());
 
   xTaskNotify(displayTaskHandle, DISPLAY_EVENT_CONFIG, eSetValueWithOverwrite);
 }
@@ -86,7 +89,7 @@ bool Network::checkRegistred()
         }
         else
         {
-            Serial.println("Error on auth request");
+            Serial.println("Error on check registred");
         }
 
         http.end();

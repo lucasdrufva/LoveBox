@@ -9,7 +9,7 @@
 #include "storage.h"
 #include "status.h"
 
-const String baseUrl = "http://192.168.198.190:5000";
+const String baseUrl = "http://212.85.66.117:5000";
 
 struct StatusUpdate;
 struct TextStatus;
