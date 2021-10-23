@@ -1,5 +1,7 @@
 package com.lovebox.server.controllers.user;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.lovebox.server.NotificationService;
 import com.lovebox.server.controllers.responses.DeviceResponse;
 import com.lovebox.server.controllers.responses.NotificationResponse;
 import com.lovebox.server.models.Notification;
@@ -27,6 +29,9 @@ public class UserNotificationController {
 
     @Autowired
     NotificationRepository notificationRepository;
+
+    @Autowired
+    NotificationService notificationService;
 
     @GetMapping("/user/notification")
     List<NotificationResponse> getNotifications(Principal principal, @RequestParam(defaultValue = "0") int page,

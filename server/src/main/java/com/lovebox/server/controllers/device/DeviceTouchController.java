@@ -1,5 +1,6 @@
 package com.lovebox.server.controllers.device;
 
+import com.lovebox.server.NotificationService;
 import com.lovebox.server.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class DeviceTouchController {
     DeviceRepository deviceRepository;
 
     @Autowired
-    NotificationRepository notificationRepository;
+    NotificationService notificationService;
 
     @PutMapping("/device/touch")
     void putStatusSeen(Principal principal, @RequestParam(defaultValue = "1") int size){
@@ -36,16 +37,10 @@ public class DeviceTouchController {
         Touch touch = new Touch();
         touch.setDate(new Date());
         touch.setSize(size);
+        touch.setDevice(device);
         device.getTouches().add(touch);
         deviceRepository.save(device);
 
-        List<User> users = device.getUsers();
-        for (User user: users) {
-            Notification notification = new Notification();
-            notification.setDate(new Date());
-            notification.setUser(user);
-            notification.setMessage("" + device.getName() + " sent love of size " + size);
-            notificationRepository.save(notification);
-        }
+        notificationService.sendTouchNotification(touch);
     }
 }

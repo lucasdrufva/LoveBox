@@ -26,4 +26,6 @@ public class User {
 
     @OneToMany(mappedBy="user")
     private List<Notification> notifications;
+
+    private String firebaseDeviceToken;
 }
