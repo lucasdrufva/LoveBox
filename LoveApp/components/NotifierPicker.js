@@ -4,6 +4,8 @@ import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 const notifiers = {
   RAINBOW: {name: 'Rainbow', value: 0},
   FLASH: {name: 'Flash', value: 1},
+  SNAKE: {name: 'Snake', value: 2},
+  TWINKLE: {name: 'Twinkle', value: 3},
 };
 
 export default function NotifierPicker({onChange}) {
@@ -19,6 +21,8 @@ export default function NotifierPicker({onChange}) {
     <View>
       <Option option={notifiers.RAINBOW} selectedOption={selectedOption} />
       <Option option={notifiers.FLASH} selectedOption={selectedOption} />
+      <Option option={notifiers.SNAKE} selectedOption={selectedOption} />
+      <Option option={notifiers.TWINKLE} selectedOption={selectedOption} />
     </View>
   );
 }

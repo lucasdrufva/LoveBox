@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {useNavigation} from '@react-navigation/native';
 
 import AddStatusButton from '../components/AddStatusButton';
+import {LocalNotification} from '../lib/LocalPushController';
 
 export default function BottomBar() {
   const navigation = useNavigation();
@@ -35,7 +36,11 @@ export default function BottomBar() {
         <Icon name="envelope" size={30} color="#555" />
         <Text>Inbox</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.item}>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => {
+          LocalNotification();
+        }}>
         <Icon name="user" size={30} color="#555" />
         <Text>Me</Text>
       </TouchableOpacity>

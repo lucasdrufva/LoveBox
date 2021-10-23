@@ -1,4 +1,4 @@
-package com.loveapp.generated;
+package com.drufva.lovelocker.generated;
 
 import java.util.Arrays;
 import java.util.List;

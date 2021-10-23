@@ -25,6 +25,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {AuthProvider} from './AuthProvider';
 import Navigation from './Navigation';
 import {DeviceProvider} from './DeviceContext';
+import RemotePushController from './lib/RemotePushController';
 
 const App: () => Node = () => {
   return (
@@ -34,6 +35,7 @@ const App: () => Node = () => {
           <Navigation />
         </DeviceProvider>
       </AuthProvider>
+      <RemotePushController />
     </GestureHandlerRootView>
   );
 };

@@ -19,7 +19,10 @@ export default function StatusCard({status}) {
           <>
             <Image
               source={{
-                uri: 'http://192.168.198.190:4566/test/' + status.preview,
+                //TODO replace string with constant from auth
+                uri:
+                  'http://s3.eu-north-1.amazonaws.com/lucasdrufva-lovebox/' +
+                  status.preview,
               }}
               style={{height: 200, resizeMode: 'contain', margin: 5}}
             />

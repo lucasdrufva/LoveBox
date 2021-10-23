@@ -25,14 +25,17 @@ import {baseUrl, useAuth} from '../AuthProvider';
 import AddDeviceButton from '../components/AddDeviceButton';
 import DeviceCard from '../components/DeviceCard';
 import {useDevice} from '../DeviceContext';
+import {useUpdateNotificationToken} from '../lib/api';
 
 const HomeScreen: () => Node = ({navigation}) => {
   const [devices, setDevices] = useState([]);
 
   const auth = useAuth().auth;
+  const updateNotificationToken = useUpdateNotificationToken();
 
   useEffect(() => {
     getDevices();
+    updateNotificationToken();
   }, []);
 
   useEffect(() => {

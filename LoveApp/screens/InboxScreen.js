@@ -36,6 +36,40 @@ export default function InboxScreen() {
       });
   }
 
+  useEffect(() => {
+    testNotifications();
+  }, []);
+
+  function testNotifications() {
+    axios
+      .get(
+        baseUrl +
+          '/user/notification/test?token=' +
+          (global.notificationToken != undefined
+            ? global.notificationToken.token
+            : ''),
+        {
+          auth: auth,
+        },
+      )
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.log('hmm error here');
+        console.log(global.notificationToken.token);
+        console.log(
+          baseUrl +
+            '/user/notification/test?token=' +
+            global.notificationToken !=
+            undefined
+            ? global.notificationToken.token
+            : '',
+        );
+        console.log(error);
+      });
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -43,6 +77,7 @@ export default function InboxScreen() {
         renderItem={notification => (
           <TouchableOpacity style={styles.card}>
             <Text>{notification.item.message}</Text>
+            <Text>{notification.item.date.split('T').join(' ')}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}

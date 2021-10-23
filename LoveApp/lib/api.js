@@ -57,4 +57,30 @@ const usePostImageStatus = device => {
   return postImageStatus;
 };
 
-export {usePostTextStatus, usePostImageStatus};
+const useUpdateNotificationToken = () => {
+  const auth = useAuth().auth;
+
+  const updateNotificationToken = useCallback(() => {
+    if (global.notificationToken) {
+      return axios
+        .put(
+          baseUrl + '/user/notification_token',
+          {token: global.notificationToken.token},
+          {
+            auth: auth,
+          },
+        )
+        .then(response => {
+          console.log('notification code updated');
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }, [auth]);
+
+  return updateNotificationToken;
+};
+
+export {usePostTextStatus, usePostImageStatus, useUpdateNotificationToken};

@@ -1,4 +1,4 @@
-package com.loveapp;
+package com.drufva.lovelocker;
 
 import com.facebook.react.ReactActivity;
 

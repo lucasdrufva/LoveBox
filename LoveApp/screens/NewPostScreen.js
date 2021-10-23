@@ -76,6 +76,7 @@ export default function NewPostScreen({navigation, route}) {
           backgroundColor[1],
           backgroundColor[2],
         ),
+        size: 3,
       }).then(() => {
         navigation.goBack();
       });
@@ -108,6 +109,13 @@ export default function NewPostScreen({navigation, route}) {
                 startHSL={{hue: 0, sat: 0, val: 1}}
               />
             </View>
+            <View style={styles.card}>
+              <Text style={styles.optionTitle}>Background Color</Text>
+              <ExpandableColorPicker
+                onChangeColor={setBackgroundColor}
+                startHSL={{hue: 0, sat: 0, val: 0}}
+              />
+            </View>
           </>
         ) : (
           <>
@@ -130,14 +138,6 @@ export default function NewPostScreen({navigation, route}) {
             </View>
           </>
         )}
-
-        <View style={styles.card}>
-          <Text style={styles.optionTitle}>Background Color</Text>
-          <ExpandableColorPicker
-            onChangeColor={setBackgroundColor}
-            startHSL={{hue: 0, sat: 0, val: 0}}
-          />
-        </View>
         <View style={styles.card}>
           <Text style={styles.optionTitle}>Notifier</Text>
           <NotifierPicker onChange={setNotifier} />
