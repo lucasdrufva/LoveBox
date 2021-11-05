@@ -11,14 +11,30 @@ The project consists of three main parts: A front-end mobile app created with re
 
 ### Mobile app
 <img src="https://user-images.githubusercontent.com/15377557/138572664-44be68eb-e24f-42db-bb2f-fa8459c99428.jpg" width="300"><img src="https://user-images.githubusercontent.com/15377557/138572680-35c53860-a2e4-4fef-9cb8-04397d4377d2.jpg" width="300">
+
+#### Tech used
+ - React-Native Javascript
+
 #### Main learning points
  - Working with firebase, mainly for push notifications
 
 ### Backend
+
+#### Tech used
+ - Spring Boot Java
+ - AWS
+ - Postgresql
+
 #### Main learning points
  - Working with Amazon Web Services, mainly S3 for image hosting
 
 ### Device
+
+<img src="https://user-images.githubusercontent.com/15377557/140484241-dca6f996-6d9a-4e91-9c1f-c3709b74a78c.jpg" width="250"><img src="https://user-images.githubusercontent.com/15377557/140484192-e3188bd5-59e2-4111-8ff3-6b7e19e820e2.jpg" width="250">
+
+#### Tech used
+ - ESP32 microcontroller running FreeRTOS
+
 #### Main learning points
  - FreeRTOS, building robust embedded systems for handling mulitple things at the same time
  - PCB design, working with unknown components because everything is out of stock...
