@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {useDevice} from '../DeviceContext';
+import '../styles/home.css'
 
 export default function DeviceCard({device}) {
   const navigation = useNavigation();
@@ -13,7 +14,7 @@ export default function DeviceCard({device}) {
         setCurrentDevice(device);
         navigation.navigate('Device');
       }}>
-      <Image source={require('../assets/logo.png')} style={styles.img} />
+        <img src={require('../assets/logo.png')} className='deviceCard_image'></img>
       <Text style={styles.title}>{device.name}</Text>
     </TouchableOpacity>
   );

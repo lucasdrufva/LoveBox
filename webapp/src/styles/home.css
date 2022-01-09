@@ -1,0 +1,16 @@
+#home_container {
+    background-image: url('../assets/LB_background1.png');
+    background-position: center;
+    height: calc(100vh - 90px);
+    background-size: cover;
+    padding: 20px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.deviceCard_image{
+    height: 50px;
+    margin-right: 20px;
+}
