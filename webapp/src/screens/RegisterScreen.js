@@ -13,6 +13,8 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import {baseUrl, useAuth} from '../AuthProvider';
+import logo from '../assets/logo.png'
+import '../styles/login.css'
 
 export default function RegisterScreen({navigation}) {
   const auth = useAuth();
@@ -46,9 +48,10 @@ export default function RegisterScreen({navigation}) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image source={require('../assets/logo.png')} style={styles.image} />
-      <View style={styles.inputView}>
+    <div id="login_container">
+      <img id="login_logo" src={logo} alt="Logo"></img>
+      <h1 id="login_title">LoveLocker</h1>
+      <div className="login_input_container">
         <TextInput
           value={emailText}
           style={styles.TextInput}
@@ -56,9 +59,9 @@ export default function RegisterScreen({navigation}) {
           placeholderTextColor="#003f5c"
           onChangeText={email => setEmailText(email)}
         />
-      </View>
+      </div>
 
-      <View style={styles.inputView}>
+      <div className="login_input_container">
         <TextInput
           value={passwordText}
           style={styles.TextInput}
@@ -67,7 +70,7 @@ export default function RegisterScreen({navigation}) {
           secureTextEntry={true}
           onChangeText={password => setPasswordText(password)}
         />
-      </View>
+      </div>
 
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
         <Text style={styles.forgot_button}>Already have an account?</Text>
@@ -76,33 +79,11 @@ export default function RegisterScreen({navigation}) {
       <TouchableOpacity style={styles.registerBtn} onPress={register}>
         <Text style={styles.loginText}>REGISTER</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </div>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 50,
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  image: {
-    resizeMode: 'contain',
-    borderRadius: 5,
-    marginBottom: 40,
-    flex: 0.5,
-  },
-  inputView: {
-    backgroundColor: '#FFC0CB',
-    borderRadius: 30,
-    width: '70%',
-    height: 45,
-    marginBottom: 20,
-    alignItems: 'center',
-  },
-
   TextInput: {
     height: 50,
     flex: 1,

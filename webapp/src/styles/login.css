@@ -1,0 +1,32 @@
+#login_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+.login_input_container {
+    background-color: #FFC0CB;
+    border-radius: 30px;
+    width: 400px;
+    height: 45px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+@media (max-width: 1000px) {
+    .login_input_container {
+        width: 70%;
+    }
+}
+
+#login_logo {
+    flex: 0.5;
+    margin: 40px 10px 20px;
+    border-radius: 1em;
+}
+
+#login_title {
+    color: #444444; font-family: 'Lato', sans-serif; font-size: 54px; font-weight: 300; line-height: 58px; margin: 0 0 20px;
+}
