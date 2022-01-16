@@ -9,6 +9,7 @@ import { baseUrl, useAuth } from '../AuthProvider';
 import StatusCard from '../components/StatusCard';
 import BottomBar from '../components/DeviceBottomBar';
 import { useDevice } from '../DeviceContext';
+import '../styles/device.css'
 
 export default function DeviceScreen({ navigation }) {
   const device = useDevice().device;
@@ -60,7 +61,7 @@ export default function DeviceScreen({ navigation }) {
   }
 
   return (
-    <View style={{ backgroundColor: 'rgba(255,216,222,255)', flex: 1 }}>
+    <div id="device_container">
       <FlatList
         data={statuses}
         renderItem={status => <StatusCard status={status.item} />}
@@ -70,17 +71,7 @@ export default function DeviceScreen({ navigation }) {
           alignItems: 'center',
         }}
       />
-      {/* <div>
-        {statuses.map((status, i) => {
-          <StatusCard key={i} status={status.item}/>
-        })}
-      </div> */}
-      <button onClick={() => {
-        navigation.navigate('PostStatus', {
-          type: statusTypes.TEXT,
-        });
-      }}>+</button>
       <BottomBar />
-    </View>
+    </div>
   );
 }

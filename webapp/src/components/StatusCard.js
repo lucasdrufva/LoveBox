@@ -29,7 +29,7 @@ export default function StatusCard({ status }) {
       //     </>
       //   )}
       // </Card>
-      <div>
+      <div className='device_card'>
         {status.type == 1 ? (
           <>
             <Text>{status.preview}</Text>

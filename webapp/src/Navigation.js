@@ -38,10 +38,10 @@ function LogoTitle({children}) {
         <Text style={{fontWeight: 'bold', fontSize: 20}}>{name}</Text>
       </View>
       <View>
-        <Image
+        {/* <Image
           style={{width: 40, height: 40, marginRight: 20}}
           source={require('./assets/logo.png')}
-        />
+        /> */}
       </View>
     </View>
   );
@@ -81,6 +81,7 @@ export default function Navigation() {
                 title: 'LoveLocker',
                 headerStyle: {
                   backgroundColor: headerColor,
+                  height: 50,
                 },
               }}
             />
